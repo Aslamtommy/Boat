@@ -1,0 +1,126 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Evara Dashboard</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <!-- Favicon -->
+    <!-- <link rel="shortcut icon" type="image/x-icon" href="/assets/imgs/theme/favicon.svg"> -->
+    <!-- Template CSS -->
+    <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <main>
+        <header class="main-header style-2 navbar">
+            <div class="col-brand">
+                <a href="index.html" class="brand-wrap">
+                    <img src="/admin-assets/imgs/theme/logo.svg" class="logo" alt="Evara Dashboard">
+                </a>
+            </div>
+            <div class="col-nav">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link btn-icon" href="#">
+                            <i class="material-icons md-notifications animation-shake"></i>
+                            <span class="badge rounded-pill">3</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
+                    </li>
+                    <li class="dropdown nav-item">
+                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false"><i class="material-icons md-public"></i></a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
+                            <a class="dropdown-item text-brand" href="#"><img src="/assets/imgs/theme/flag-us.png" alt="English">English</a>
+                            <a class="dropdown-item" href="#"><img src="/assets/imgs/theme/flag-fr.png" alt="Français">Français</a>
+                            <a class="dropdown-item" href="#"><img src="/assets/imgs/theme/flag-jp.png" alt="Français">日本語</a>
+                            <a class="dropdown-item" href="#"><img src="/assets/imgs/theme/flag-cn.png" alt="Français">中国人</a>
+                        </div>
+                    </li>
+                    
+                </ul>
+            </div>
+        </header>
+        <section class="content-main mt-80 mb-80">
+            <div class="card mx-auto card-login">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Sign in</h4>
+                    <form action="/admin/login" method="post" >
+                        <div class="mb-3">
+                            <input class="form-control" name="email" placeholder="Username or email" type="text" required>
+                        </div> <!-- form-group// -->
+                        <div class="mb-3">
+                            <input class="form-control" name="password" placeholder="Password" type="password" required>
+                        </div> <!-- form-group// -->
+                        <div class="mb-3">
+                            <a href="/login" class="float-end font-sm text-muted">Forgot password?</a>
+                            <label class="form-check">
+                                <input type="checkbox" class="form-check-input" checked="">
+                                <span class="form-check-label">Remember</span>
+                            </label>
+                        </div> <!-- form-group form-check .// -->
+                        <div class="mb-4">
+                            <button type="submit" class="btn btn-primary w-100"> Login </button>
+                        </div> <!-- form-group// -->
+                    </form>
+                    <!-- <p class="text-center small text-muted mb-15">or sign up with</p> -->
+                    
+            </div>
+        </section>
+        <footer class="main-footer text-center">
+            <p class="font-xs">
+                <script>
+                document.write(new Date().getFullYear())
+                </script> ©, Evara - HTML Ecommerce Template .
+            </p>
+            <p class="font-xs mb-30">All rights reserved</p>
+        </footer>
+    </main>
+    <style>
+        /* Custom CSS for button size and appearance */
+        .btn {
+            padding: 10px 20px; /* Adjust padding as needed */
+            font-size: 14px; /* Adjust font size as needed */
+        }
+
+        .btn-light {
+            background-color: #f8f9fa; /* Adjust background color as needed */
+            color: #212529; /* Adjust text color as needed */
+            border-color: #dee2e6; /* Adjust border color as needed */
+        }
+
+        .btn-primary {
+            background-color: #007bff; /* Adjust background color as needed */
+            border-color: #007bff; /* Adjust border color as needed */
+        }
+        .card-login {
+            max-width: 400px; /* Adjust the maximum width of the form */
+            margin: auto; /* Center the form horizontally */
+        }
+
+        .btn-login {
+            width: 100px; /* Adjust the width of the login button */
+        }
+    </style>
+    <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/vendors/jquery.fullscreen.min.js"></script>
+
+    <!-- Template  JS -->
+    <script src="/admin-assets/js/main.js?v=3.4"></script>
+    <script src=""></script>
+    <!-- Main Script -->
+</body>
+
+</html>

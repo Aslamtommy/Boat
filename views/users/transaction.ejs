@@ -1,0 +1,151 @@
+<%- include('../layouts/header') %>
+
+<style>
+    .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination-info {
+    margin-right: 20px;
+    font-size: 16px;
+}
+
+.pagination-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.pagination-button {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+    background-color: #fff;
+    margin-right: 5px;
+}
+
+.pagination-button:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination-page {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+    background-color: #fff;
+    margin-right: 5px;
+}
+
+.pagination-page.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.prev-button,
+.next-button {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.prev-button:hover,
+.next-button:hover {
+    background-color: #0056b3;
+}
+
+</style>
+
+<section class="content-main">
+    <div class="content-header mt-20">
+        <div>
+            <h2 class="content-title card-title text-center">Wallet </h2transaction>
+        </div>
+    </div>
+   <div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover text-center">
+                        <% if (wallet && wallet.length > 0) { %>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Amount</th>
+                                    <th>date</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% wallet.forEach((walletItem, walletIndex) => { %>
+                                    <% if (Array.isArray(walletItem.transaction)) { %>
+                                        <% walletItem.transaction.forEach((transactionItem, transactionIndex) => { %>
+                                            <tr>
+                                                <td><%= (walletIndex * limit) + transactionIndex + 1 %></td>
+                                                <td><b><%= transactionItem.amount %></b></td>
+                                                <td><%= transactionItem.reason %></td>
+                                                <td><%= transactionItem.transactionType %></td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } else if (typeof walletItem.transaction === 'object') { %>
+                                        <!-- If transaction is an object, handle it accordingly -->
+                                        <tr>
+                                            <td><%=   walletIndex  + 1 %></td>
+                                            <td><b><%= walletItem.transaction.amount %></b></td>
+                                            <td><%= new Date(walletItem.transaction.date).toLocaleDateString() %></td>
+                                            <td><%= walletItem.transaction.reason %></td>
+                                            <td><%= walletItem.transaction.transactionType %></td>
+                                        </tr>
+                                    <% } %>
+                                <% }) %>
+                            </tbody>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="4">
+                                    <h3 class="text-dark">No transactions found for this wallet</h3>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </table>
+                    
+                    <!-- Debug statements -->
+                   
+                </div> <!-- table-responsive //end -->
+            </div> <!-- card-body end// -->
+        </div> <!-- card end// -->
+    </div>
+</div>
+<section>
+    <div class="pagination">
+        <% if (totalPages > 1) { %>
+            <span class="pagination-info">Page <%= currentPage %> of <%= totalPages %></span>
+            <div class="pagination-buttons">
+                <% if (currentPage > 1) { %>
+                    <a href="/wallettransaction?page=<%= currentPage - 1 %>" class="pagination-button prev-button">Previous</a>
+                <% } %>
+                <div class="pagination-pages">
+                    <% let startPage = Math.max(1, currentPage - 2); %>
+                    <% let endPage = Math.min(totalPages, startPage + 4); %>
+                    <% for (let i = startPage; i <= endPage; i++) { %>
+                        <a href="/wallettransaction?page=<%= i %>" class="pagination-page <%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+                    <% } %>
+                </div>
+                <% if (currentPage < totalPages) { %>
+                    <a href="/wallettransaction?page=<%= currentPage + 1 %>" class="pagination-button next-button">Next</a>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+    <!-- Debug statements -->
+    
+</section>
+
+
+
+<%- include('../layouts/footer') %>
