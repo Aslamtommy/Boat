@@ -94,13 +94,14 @@ const verifyLogin = async (req, res) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
+    const isLoggedIn = req.session.user_id ? true : false;
     
     const userData = await User.findOne({ email: email });
     
     if (userData) {
       // Check if the user is blocked
       if (userData.isBlocked) {
-        // Set isBlocked in the session
+      
         req.session.isBlocked = true;
         return res.redirect("/login"); // Redirect to login page
       }
@@ -111,7 +112,7 @@ const verifyLogin = async (req, res) => {
         req.session.email_id = userData.email;
     
         // Store the user's email in the session
-        return res.redirect("/");
+        return res.redirect("/home");
       } else {
         // Pass a message to the login template for incorrect email or password
         const message = "Email or password is incorrect";
@@ -136,9 +137,21 @@ const verifyLogin = async (req, res) => {
 
 const loadHome = async (req, res) => {
   try {
+    const isLoggedIn = req.session.user_id ? true : false;
     console.log(req.session.user_id);
     const productData = await Product.find({}).populate("category");
-    res.render("home", { product: productData });
+    res.render("home", { product: productData,isLoggedIn });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const loadHome2 = async (req, res) => {
+  try {
+    const isLoggedIn = req.session.user_id ? true : false;
+    console.log(req.session.user_id);
+    const productData = await Product.find({}).populate("category");
+    res.render("home", { product: productData,isLoggedIn });
   } catch (error) {
     console.log(error.message);
   }
@@ -155,7 +168,7 @@ const  userLogout = async (req, res) => {
         console.log('Session destroyed successfully');
       }
     });
-    res.redirect('/');
+    res.redirect('/login');
   } catch (error) {
     console.error('Error logging out:', error);
     res.status(500).send('Error logging out');
@@ -173,7 +186,7 @@ const verifyOtp = async (req, res) => {
     const otpData = await Otp.findOne({ email: email, otp: otp });
     console.log("otpData:", otpData);
     if (otpData) {
-      res.redirect("/");
+      res.redirect("/login");
     } else {
       res.status(400).render("otp", { alert: "Invalid otp" });
     }
@@ -210,8 +223,8 @@ const productpage = async (req, res) => {
 
 const useraccount = async (req, res) => {
   try {
-      // Get the user ID from the session or wherever it is stored in your application
-      const userId = req.session.user_id; // Assuming the user ID is stored in the session
+     
+      const userId = req.session.user_id; 
 
       // Fetch the user from the database based on the user ID
       const userData = await User.findById(userId);
@@ -476,5 +489,8 @@ module.exports = {
   verifyemail,
   shop,
   sortshop,
+  loadHome2
 
 };
+
+

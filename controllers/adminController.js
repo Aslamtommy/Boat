@@ -13,9 +13,36 @@ const loadLogin = async (req, res) => {
     console.log(error.message);
   }
 };
+
+
 const verifyLogin = async (req, res) => {
   try {
-    console.log("hellooooo");
+    const users=await User.find()
+    const orders = await order.find()
+    const products = await product.find()
+    const categories = await category.find()
+    const orderData = await order.find({ status: "delivered" }).limit(10).sort({ date: -1 })
+    const topProducts=await getTopSellingProducts()
+
+
+    const topCategories=await getTopSellingCategories()
+
+   
+    const monthlyDataArray = await getMonthlyDataArray();
+    const dailyDataArray = await getDailyDataArray();
+    const yearlyDataArray = await getYearlyDataArray();
+
+
+    const monthlyOrderCounts = monthlyDataArray.map((item) => item.count)
+
+    const dailyOrderCounts = dailyDataArray.map((item) => item.count)
+
+    const yearlyOrderCounts = yearlyDataArray.map((item) => item.count)
+
+
+
+
+ 
     const email = req.body.email;
     const password = req.body.password;
     const userData = await User.findOne({ email: email });
@@ -30,7 +57,10 @@ const verifyLogin = async (req, res) => {
           console.log("hellooooo");
           req.session.adminId = userData._id;
 
-          res.render("adminPanel");
+          res.render("adminPanel",{ users,topCategories,
+            orders: orders, products: products, categories: categories,
+            orderData, dailyOrderCounts, monthlyOrderCounts, yearlyOrderCounts,
+            topProducts});
         }
       }
     } else {
@@ -54,10 +84,7 @@ const loadDashboard = async (req, res) => {
 
     const topCategories=await getTopSellingCategories()
 
-    // let totalOrderPrice = 0;
-    // orders.forEach(order => {
-    //     totalOrderPrice += order.total || 0
-    // })
+   
     const monthlyDataArray = await getMonthlyDataArray();
     const dailyDataArray = await getDailyDataArray();
     const yearlyDataArray = await getYearlyDataArray();

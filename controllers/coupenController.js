@@ -70,7 +70,6 @@ const changelisting = async (req, res) => {
             return res.status(404).send("category not found");
         }
 
-        // Toggle the value of is_block
         const newIsBlockValue = couponData.is_list === true ? false : true;
 
         await coupon.updateOne({ code: couponCode }, { $set: { is_list: newIsBlockValue } });

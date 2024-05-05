@@ -80,9 +80,7 @@ const updateCategory = async (req, res) => {
 const blockCategory = async (req, res) => {
   try {
     const userdata = req.query._id;
-    const data = await category.findByIdAndUpdate(userdata, {
-      isBlocked: true,
-    });
+    const data = await category.findByIdAndUpdate(userdata, {isBlocked: true,});
     res.redirect("/admin/categories");
   } catch (error) {
     console.log(error.message);
@@ -112,8 +110,8 @@ const categoryOffer = async (req, res) => {
     // Parse offerPercentage to ensure it's a valid number
     const parsedPercentage = parseFloat(offerPercentage);
     console.log(parsedPercentage, category);
-    const productData = await product.find({ category }).populate('category'); // Assuming category is the correct field name
-    console.log('Product Data:', productData); // Log the product data to see if it's empty or contains data
+    const productData = await product.find({ category }).populate('category'); 
+    console.log('Product Data:', productData); 
     // Check if productData is empty
     if (productData.length === 0) {
       console.log('Product data is empty');
@@ -121,8 +119,7 @@ const categoryOffer = async (req, res) => {
     }
    
     for (let i = 0; i < productData.length; i++) {
-      // Log each iteration
-      console.log(`Processing product ${i + 1}: ${productData[i].name}`);
+     
       // Calculate percentageAmount only if offerPercentage is a valid number
       const percentageAmount = parsedPercentage * productData[i].price / 100;
       productData[i].promoprice = parseInt(productData[i].price);

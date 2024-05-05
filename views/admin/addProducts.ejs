@@ -289,16 +289,16 @@
     }
 
     // Image type validation
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    const selectedFile = image.files[0];
-    if (!allowedTypes.includes(selectedFile.type)) {
-        Swal.fire({
-            icon: 'error',
+     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+     const selectedFile = image.files[0];
+     if (!allowedTypes.includes(selectedFile.type)) {
+         Swal.fire({
+             icon: 'error',
             title: 'Oops...',
-            text: 'Please select a valid image file (JPEG, PNG, or GIF).'
+             text: 'Please select a valid image file (JPEG, PNG, or GIF).'
         });
         return false;
-    }
+     }
 
     return true;
 }

@@ -201,7 +201,7 @@
                                         <th>Price</th>
                                         <th>Status</th>
                                         <th>Stock</th>
-                                        <th>Promo Price</th> <!-- Changed from "Action" -->
+                                 
                                         <th>Category</th>
                                         <th>Add Offer</th>
                                         <th>Action</th> <!-- Changed to where "Promo Price" was -->
@@ -231,13 +231,7 @@
                                         </td>
                                         <% } %>
                                         <td><%= element.stock %></td>
-                                        <td>
-                                            <% if (element.promoprice) { %>
-                                            <%= element.promoprice %>
-                                            <% } else { %>
-                                            <!-- Placeholder or leave empty if no promo price -->
-                                            <% } %>
-                                        </td>
+                                  
                                         <td>
                                             <%= element.category.name %>
                                         </td>

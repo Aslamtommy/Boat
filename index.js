@@ -3,7 +3,7 @@ const nocache = require('nocache')
 require('dotenv').config();
 
 
-mongoose.connect(process.env.MONGODB)
+mongoose.connect("mongodb://localhost:27017/")
 mongoose.connection.on('connected',()=>{
     console.log("monogo db connected")
 })
@@ -26,8 +26,8 @@ app.use('/',userRoute)
 //for admin routes
 const adminRoute= require('./routes/adminRoute')
 app.use('/admin',adminRoute)
-const port=process.env.PORT
 
-app.listen(port,function(){
+
+app.listen(3000,function(){
     console.log('server is running')
 })

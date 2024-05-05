@@ -51,14 +51,14 @@ const getDailyDataArray = async () => {
 const getMonthlyDataArray = async () => {
     // Monthly Data
     const currentDate = new Date();
-    const sevenMonthsAgo = new Date();
-    sevenMonthsAgo.setMonth(sevenMonthsAgo.getMonth() - 12);
+    const tweleMonthsAgo = new Date();
+    tweleMonthsAgo .setMonth(sevenMonthsAgo.getMonth() - 12);
 
     const monthlyOrders = await Order.aggregate([
         {
             $match: {
                 status: "delivered",
-                date: { $gte: sevenMonthsAgo, $lte: currentDate },
+                date: { $gte:tweleMonthsAgo , $lte: currentDate },
             },
         },
         {

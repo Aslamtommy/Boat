@@ -62,6 +62,23 @@ const ordersuccess = async (req, res) => {
 
 
 
+const retryorder = async (req, res) => {
+    try {
+        
+    
+        res.render('retry');
+    } catch (error) {
+        console.error('Error processing order:', error);
+        res.status(500).send('Error processing order');
+    }
+};
+
+
+
+
+
+
+
 const placeOrder = async (req, res) => {
     try {
         const userId = req.session.user_id;
@@ -91,13 +108,16 @@ const placeOrder = async (req, res) => {
 
         // Calculate total price of the order after applying discount
         let total = cartSubtotal - (discount || 0);
+        console.log('Total before applying discount:', cartSubtotal);
+        console.log('Discount applied:', discount);
+        console.log('Total after discount:', total);
+
         const orderItems = [];
 
         // Update product stock and create new order
         for (const item of orderProductsData.items) {
             const productData = await product.findOne({ _id: item.productId });
 
-       
             const category = productData.category;
 
             // Add item to order items array with category included
@@ -130,23 +150,22 @@ const placeOrder = async (req, res) => {
 
         // Save order to database
         const orderData = await newOrder.save();
-       
 
+        console.log('Order saved to database:', orderData);
 
         // Clear cart
-    
-
         console.log('Cart cleared for user:', userId);
+             // Clear cart after placing order
+             await cart.findOneAndUpdate({ userId: userId }, { $set: { items: [] } });
 
         // Deduct payment amount from wallet balance if payment option is 'Wallet'
         if (paymentOption === 'Wallet') {
-                    // Store orderId in session
-           req.session.orderId = orderData._id;
+            // Store orderId in session
+            req.session.orderId = orderData._id;
             const userWallet = await Wallet.findOne({ userid: userId });
             if (userWallet.balance >= total) {
                 userWallet.balance -= total;
                 userWallet.transaction.push({ amount: total, reason: "product payment", transactionType: "Debit" });
-
                 await userWallet.save();
             } else {
                 return res.status(400).json({ success: false, message: 'Insufficient balance in wallet' });
@@ -164,8 +183,9 @@ const placeOrder = async (req, res) => {
             });
 
             console.log('Razorpay order created:', razorpayOrder);
-   // Reduce stock for each product in the order
-  
+
+            // Reduce stock for each product in the order
+            // ...
 
             // Send Razorpay order ID and amount to client-side
             return res.status(200).json({
@@ -175,11 +195,11 @@ const placeOrder = async (req, res) => {
                 orderAmount: razorpayOrder.amount
             });
         }
-           // Store orderId in session
-           req.session.orderId = orderData._id;
-       
-        // For other payment options, return success response
-        await cart.updateOne({ userId: userId }, { $set: { items: [] } });
+
+        // Store orderId in session
+        req.session.orderId = orderData._id;
+
+        
         return res.status(200).json({
             success: true,
             message: 'Order placed successfully'
@@ -190,8 +210,6 @@ const placeOrder = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Failed to place order' });
     }
 };
-
-
 
 const placeOrder2 = async (req, res) => {
     try {
@@ -398,10 +416,8 @@ const cancelorder = async (req, res) => {
 
 const orderlist = async (req, res) => {
     try {
-        const page = req.query.page || 1; // Get page number from query parameters, default to 1
-        const limit = 10; // Set the number of orders per page
-
-        // Count total number of orders
+        const page = req.query.page || 1; 
+        const limit = 10; 
         const totalOrders = await order.countDocuments();
 
         // Calculate total pages
@@ -502,12 +518,12 @@ const failedpayment = async (req, res) => {
     try {
         const orderid = req.query.id;
         const orderData = await order.findOne({ orderId: orderid });
-        const isLoggedIn = req.session.user_id ? true : false;
+
         const userData = await user.find({ _id: req.session.user_id });
         const addressData = await address.findOne({ userid: req.session.user_id });
         console.log(orderData);
 
-        return res.render('failedpayment', { isLoggedIn, userData, addressData, orderData });
+        return res.render('failedpayment', {  userData, addressData, orderData });
 
     } catch (error) {
         console.error("Error in failedpayment function:", error);
@@ -650,7 +666,8 @@ module.exports = {
     failedpayment,
     placeOrder2 ,
     paymentstatus,
-    saveInvoice
+    saveInvoice,
+    retryorder
 };
 
 

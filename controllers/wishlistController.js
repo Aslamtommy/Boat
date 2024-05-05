@@ -32,7 +32,7 @@ const addtowishlist = async (req, res) => {
         // Check if the product is already in the wishlist
         if (wishlist.products.includes(productId)) {
             console.log("Product already exists in the wishlist");
-            return res.redirect('/'); // Redirect to home page or wherever appropriate
+            return res.redirect('/'); // Redirect to home 
         }
 
         // Add the product to the wishlist

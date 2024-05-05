@@ -79,12 +79,14 @@
                                               <tr>
                                                 <!-- Product Image -->
                                                 <td class="image product-thumbnail">
-                                                  <img src="<%= productData.productId.additionalimages && productData.productId.additionalimages.length > 0 ? '/' + productData.productId.additionalimages[0] : '#' %>" alt="Product Image">
+                                                    <img src="<%= productData.productId && productData.productId.additionalimages && productData.productId.additionalimages.length > 0 ? '/' + productData.productId.additionalimages[0] : '#' %>" alt="Product Image">
+
                                                 </td>
                                                 
                                                 <!-- Product Name and Quantity -->
                                                 <td>
-                                                  <h5><a href="shop-product-full.html"><%= productData.productId.name %></a></h5>
+                                                    <h5><a href="shop-product-full.html"><%= productData.productId && productData.productId.name ? productData.productId.name : 'Product Name Unavailable' %></a></h5>
+
                                                   <span class="product-qty">x <%= productData.quantity %></span>
                                                 </td>
                                                 
@@ -99,11 +101,7 @@
                                               <th>SubTotal</th>
                                               <td class="product-subtotal" colspan="2">$<%= totalSubtotal.toFixed(2) %></td>
                                             </tr>
-                                            <!-- Discount -->
-                                              <tr>
-                                            <th>Discount</th>
-                                            <td colspan="2"></td>
-                                             </tr>
+                                         
 
                                             
                                             <!-- Shipping -->
@@ -133,7 +131,7 @@
                            
 
                             <div class="coupons-section">
-                                <h2 class="section-title">Available Coupons</h2>
+                                <h2 class="section-title"> Coupons</h2>
                                 <table class="coupon-table">
                                     <thead>
                                         <tr>
@@ -156,17 +154,17 @@
                             
                         </div>
 
-                            <div class="mb-30 mt-50">
-                                <div class="heading_s1 mb-3">
-                                    <h4>Apply Coupon</h4>
-                                </div>
-                                <input type="text" name="coupon" id="couponcode" placeholder="Enter your Coupon Code" style="width:53%" oninput="this.value=this.value.toUpperCase()">
-                                <span><button class="btn btn-sm" onclick="applycoupon()"> <i class="fi-rs-label mr-10"></i>Apply</button></span>
-                                <button class="btn btn-sm ml-2" onclick="cancelCoupon()">Cancel Coupon</button> <!-- New button for canceling coupon -->
-                                <div>
-                                    <p id="couponmessage"></p>
-                                </div>
+                        <div class="mb-30 mt-50">
+                            <div class="heading_s1 mb-3">
+                                <h4>Apply Coupon</h4>
                             </div>
+                            <input type="text" name="coupon" id="couponcode" placeholder="Enter your Coupon Code" style="width:53%" oninput="this.value=this.value.toUpperCase()">
+                            <span><button class="btn btn-sm" onclick="applycoupon()"> <i class="fi-rs-label mr-10"></i>Apply</button></span>
+                            <button id="cancelCouponBtn" class="btn btn-sm ml-2" onclick="cancelCoupon()" style="display:none;">Cancel Coupon</button> <!-- New button for canceling coupon -->
+                            <div>
+                                <p id="couponmessage"></p>
+                            </div>
+                        </div>
                             
 
                             <div class="bt-1 border-color-1 mt-30 mb-30"></div>
@@ -399,6 +397,11 @@
 </body>
 
 </html>
+<!-- SweetAlert CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+
+<!-- SweetAlert JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <!-- Add this script in your HTML file -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
@@ -411,6 +414,8 @@
                     const couponCode = document.getElementById('couponcode').value
                     let totalpriceElement = document.getElementById("totalprice");
                     let totalPrice = totalpriceElement.innerText;
+                    document.getElementById('couponmessage').innerText = 'Coupon applied successfully';
+        document.getElementById('cancelCouponBtn').style.display = 'inline-block'; // Show the cancel coupon button
                     console.log(totalPrice)
 
                     console.log(couponCode);
@@ -445,6 +450,9 @@
 
     // Reset the discount amount to zero
     document.getElementById("discount").innerText = "Rs: 0";
+    document.getElementById('couponmessage').innerText = 'Coupon canceled successfully';
+        document.getElementById('couponcode').value = ''; // Clear coupon input field
+        document.getElementById('cancelCouponBtn').style.display = 'none'; // Hide the cancel coupon button again
 
     // Update the total price (assuming totalSubtotal is the original total before applying the coupon)
     var totalSubtotal = parseFloat(<%= totalSubtotal.toFixed(2) %>);
@@ -466,8 +474,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Get the selected address value
         const addressId = selectedAddress.value;
-        const totalpriceElement = document.getElementById("totalprice");
-        const totalPrice = totalpriceElement ? parseFloat(totalpriceElement.innerText.replace('$', '')) : 0;
+        const totalPriceElement = document.getElementById("totalprice");
+
+if (totalPriceElement) {
+    const totalPriceText = totalPriceElement.innerText.trim();
+    console.log('Total Price Text:', totalPriceText); // Debugging statement
+    const priceWithoutCurrency = totalPriceText.replace('Rs:', '').replace('$', '').trim();
+    console.log('Price Without Currency:', priceWithoutCurrency); // Debugging statement
+    totalPrice = parseFloat(priceWithoutCurrency);
+}
+
+console.log('Parsed Price:', totalPrice);
+
         const paymentOptionRadio = document.querySelector('input[name="payment_option"]:checked');
         const paymentOption = paymentOptionRadio ? paymentOptionRadio.value : null;
 
@@ -490,7 +508,7 @@ document.addEventListener('DOMContentLoaded', function () {
             addressId: addressId,
             cartSubtotal: totalPrice,
             paymentOption: paymentOption,
-            discount: 0 // Placeholder for discount, adjust as needed
+            discount: discount // Placeholder for discount, adjust as needed
         };
 
         // Place order
@@ -530,16 +548,17 @@ document.addEventListener('DOMContentLoaded', function () {
              const   rzp1 = new Razorpay(options) 
              
              rzp1.on('payment.failed', function (response) {
-                                    Swal.fire({
-                                        position: "top-end",
-                                        icon: "error",
-                                        title: "You canceled the Payment",
-                                        showConfirmButton: false,
-                                        timer: 1500
-                                    });
-                                    updatePaymentStatus('failed', response.orderId);
-                                   
-                                });;
+    console.log('Payment failed event triggered:', response);
+    Swal.fire({
+        position: "top-end",
+        icon: "error",
+        title: "You canceled the Payment",
+        showConfirmButton: false,
+        timer: 1500
+    });
+    updatePaymentStatus('failed', response.orderId);
+    window.location.href = '/retryorder';
+});
 
 
 

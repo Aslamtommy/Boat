@@ -22,7 +22,7 @@ const walletTransaction = async (req, res, next) => {
     try {
         let page = 1;
         if (req.query.page) {
-            page = parseInt(req.query.page); // Convert to integer
+            page = parseInt(req.query.page); 
         }
 
         const limit = 7; // Limit per page
@@ -47,18 +47,20 @@ const walletTransaction = async (req, res, next) => {
         walletData.forEach(walletItem => {
             if (Array.isArray(walletItem.transaction)) {
                 walletItem.transaction.forEach(transactionItem => {
-                    const parsedDate = moment(parseInt(transactionItem.date)).toDate();
+                    const parsedDate = moment(transactionItem.date).toDate();
+                    console.log(`Original date for transaction: ${transactionItem.date}`);
                     console.log(`Parsed date for transaction: ${parsedDate}`);
                     transactionItem.date = moment(parsedDate).format('YYYY-MM-DD HH:mm:ss');
+                    console.log(`Formatted date for transaction: ${transactionItem.date}`);
                 });
             } else if (typeof walletItem.transaction === 'object') {
-                const parsedDate = moment(parseInt(walletItem.transaction.date)).toDate();
+                const parsedDate = moment(walletItem.transaction.date).toDate();
+                console.log(`Original date for transaction: ${walletItem.transaction.date}`);
                 console.log(`Parsed date for transaction: ${parsedDate}`);
                 walletItem.transaction.date = moment(parsedDate).format('YYYY-MM-DD HH:mm:ss');
+                console.log(`Formatted date for transaction: ${walletItem.transaction.date}`);
             }
         });
-        
-        
 
         const userData = await user.findOne({ _id: new mongoose.Types.ObjectId(req.session.user_id) });
 
@@ -73,6 +75,7 @@ const walletTransaction = async (req, res, next) => {
         next(error.message);
     }
 }
+
 
 
 module.exports={

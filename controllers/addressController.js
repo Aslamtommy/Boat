@@ -8,9 +8,8 @@ const addAddress = async (req, res) => {
         const id = req.session.user_id
         const userData = await user.findOne({ _id: id })
 
-        const isLoggedIn = req.session.user_id ? true : false;
 
-        return res.render('addaddress', { isLoggedIn, userData })
+        return res.render('addaddress', {  userData })
     } catch (error) {
         console.log(error.message);
     }
@@ -52,9 +51,7 @@ const addnewaddress = async (req, res) => {
         const id = req.session.user_id
         const userData = await user.findOne({ _id: id })
 
-        const isLoggedIn = req.session.user_id ? true : false;
-
-        return res.render('addaddress', { isLoggedIn, userData })
+        return res.render('addaddress', { userData })
     } catch (error) {
         console.log(error.message);
     }
@@ -103,9 +100,8 @@ const editAddress = async (req, res) => {
         const addressData=await Address.findOne({userid:id})
         const index = req.query.id;
         const address = addressData.address[index]
-       
-        const isLoggedIn = req.session.user_id ? true : false;
-        res.render('editaddress', { isLoggedIn, userData,address });
+    
+        res.render('editaddress', { userData,address });
 
     } catch (error) {
         console.log(error.message);

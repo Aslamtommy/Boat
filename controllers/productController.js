@@ -762,7 +762,7 @@ const downloadPdf = async (req, res) => {
 
     // Add overall summary to the PDF
     doc.fontSize(12)
-    .text(`Overall Order Amount: ${TotalAmount.toFixed(2)}`, { align: "right" })
+    .text(`Total Amount: ${TotalAmount.toFixed(2)}`, { align: "right" })
     .text(`Overall Discount: ${overallDiscount.toFixed(2)}`, { align: "right" })
     .text(`Overall Sales Count: ${overallSalesCount}`, { align: "right" });
 

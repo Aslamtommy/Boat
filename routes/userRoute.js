@@ -29,9 +29,10 @@ user_route.get("/register", isLogout, guest, userController.loadRegister);
 user_route.post("/register", userController.insertUser);
 
 // user_route.get("/", isLogout, guest, userController.loginLoad);
+user_route.get("/",isLogout, guest, userController.loadHome2);
 user_route.get("/login", isLogout, guest, userController.loginLoad);
 user_route.post("/login", isLogout, guest, userController.verifyLogin);
-user_route.get("/",isLogin, guest, userController.loadHome);
+user_route.get("/home",isLogin, guest, userController.loadHome);
 user_route.get("/logout", isLogin, userController.userLogout);
 user_route.get('/forgetpassword',userController.forgetpassword)
 user_route.post('/verifyemail',userController.verifyemail)
@@ -41,6 +42,7 @@ user_route.get("/resendotp/:email", isLogout, guest, userController.resendOtp);
 user_route.get("/productpage", userController.productpage);
 
 // user_route.get('/cartlist',cartcontroller.cartlist)
+user_route.get('/cartpage',isLogin,cartcontroller. myCart)
 user_route.get('/cart',isLogin,cartcontroller. cart)
 user_route.get('/addToCart',cartcontroller. addToCart)
  user_route.get('/deletecart',cartcontroller.deletecart)
@@ -50,6 +52,8 @@ user_route.get('/addToCart',cartcontroller. addToCart)
  user_route.get('/checkoutpage',isLogin,cartcontroller.checkoutpage)
 
  user_route.get('/ordersuccess',isLogin,orderController.ordersuccess)
+ 
+ user_route.get('/retryorder',isLogin,orderController.retryorder)
  user_route.post('/placeorder',isLogin, orderController.placeOrder);
 
  user_route.post('/placeorder2',isLogin, orderController.placeOrder2);
