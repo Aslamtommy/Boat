@@ -1,28 +1,170 @@
-
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <title>Evara Dashboard</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="description" content="">
+    <meta name="description" content="Login to Evara Dashboard for a seamless admin experience">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta property="og:title" content="">
-    <meta property="og:type" content="">
-    <meta property="og:url" content="">
-    <meta property="og:image" content="">
+    <meta property="og:title" content="Evara Dashboard Login">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com">
+    <meta property="og:image" content="/assets/imgs/theme/favicon.svg">
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="/assets/imgs/theme/favicon.svg">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Template CSS -->
     <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f9f9f9;
+            color: #444;
+            margin: 0;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .main-header {
+            background: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 15px 0;
+        }
+        .col-brand img {
+            max-height: 40px;
+        }
+        .nav-link.btn-icon {
+            color: #444;
+            transition: color 0.3s ease;
+        }
+        .nav-link.btn-icon:hover {
+            color: #00c4cc;
+        }
+        .content-main {
+            flex: 1;
+            padding: 60px 0;
+        }
+        .card-login {
+            max-width: 400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .form-control {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #00c4cc;
+            box-shadow: 0 0 5px rgba(0, 196, 204, 0.3);
+            outline: none;
+        }
+        .btn {
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background-color: #00c4cc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .btn-light {
+            background-color: #f8f9fa;
+            color: #212529;
+            border: 1px solid #ddd;
+        }
+        .btn-light:hover {
+            background-color: #e9ecef;
+            color: #212529;
+        }
+        .form-check-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .text-muted {
+            font-size: 0.85rem;
+            color: #777;
+        }
+        .text-muted:hover {
+            color: #00c4cc;
+        }
+        .main-footer {
+            background: #ffffff;
+            padding: 20px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            margin-top: auto;
+        }
+        .font-xs {
+            font-size: 0.75rem;
+            color: #777;
+        }
+        /* Google Sign-In Button (Static Placeholder) */
+        .google-signin {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            color: #757575;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+        .google-signin:hover {
+            background-color: #f1f3f4;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        .google-signin img {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
+        @media (max-width: 768px) {
+            .card-login {
+                margin: 0 15px;
+                padding: 20px;
+            }
+            .col-nav {
+                flex-grow: 1;
+                justify-content: flex-end;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <main>
         <header class="main-header style-2 navbar">
             <div class="col-brand">
-                <a href="index.html" class="brand-wrap">
+                <a href="/admin/adminhome" class="brand-wrap">
                     <img src="/admin-assets/imgs/theme/logo.svg" class="logo" alt="Evara Dashboard">
                 </a>
             </div>
@@ -45,11 +187,10 @@
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
                             <a class="dropdown-item text-brand" href="#"><img src="/assets/imgs/theme/flag-us.png" alt="English">English</a>
                             <a class="dropdown-item" href="#"><img src="/assets/imgs/theme/flag-fr.png" alt="Français">Français</a>
-                            <a class="dropdown-item" href="#"><img src="/assets/imgs/theme/flag-jp.png" alt="Français">日本語</a>
-                            <a class="dropdown-item" href="#"><img src="/assets/imgs/theme/flag-cn.png" alt="Français">中国人</a>
+                            <a class="dropdown-item" href="#"><img src="/assets/imgs/theme/flag-jp.png" alt="日本語">日本語</a>
+                            <a class="dropdown-item" href="#"><img src="/assets/imgs/theme/flag-cn.png" alt="中国人">中国人</a>
                         </div>
                     </li>
-                 
                 </ul>
             </div>
         </header>
@@ -59,173 +200,54 @@
                     <h4 class="card-title mb-4">Sign in</h4>
                     
                     <% if (message) { %>
-                        <p><%= message %></p>
+                        <p class="text-center text-danger mb-3"><%= message %></p>
                     <% } %>
 
-    <% if (isBlocked) { %>
-        <p>User is blocked. Please contact support for assistance.</p>
-    <% } %>
-                    <form action="/login" method="post" >
-                      
-                         
+                    <% if (isBlocked) { %>
+                        <p class="text-center text-danger mb-3">User is blocked. Please contact support for assistance.</p>
+                    <% } %>
+
+                    <form action="/login" method="post">
                         <div class="mb-3">
-                            <input class="form-control" name="email" placeholder="Username or email" type="text">
-                        </div> <!-- form-group// -->
+                            <input class="form-control" name="email" placeholder="Username or email" type="text" required>
+                        </div>
                         <div class="mb-3">
-                            <input class="form-control" name="password" placeholder="Password" type="password">
-                        </div> <!-- form-group// -->
-                        <div class="mb-3">
-                            <a href="/forgetpassword" class="float-end font-sm text-muted">Forgot password?</a>
+                            <input class="form-control" name="password" placeholder="Password" type="password" required>
+                        </div>
+                        <div class="mb-3 d-flex justify-content-between align-items-center">
                             <label class="form-check">
-                                <input type="checkbox" class="form-check-input" checked="">
-                                <span class="form-check-label">Remember</span>
+                                <input type="checkbox" class="form-check-input" checked>
+                                <span class="form-check-label">Remember me</span>
                             </label>
-                        </div> <!-- form-group form-check .// -->
+                            <a href="/forgetpassword" class="text-muted">Forgot password?</a>
+                        </div>
                         <div class="mb-4">
-                            <button type="submit" class="btn btn-primary w-100"> Login </button>
-                        </div> <!-- form-group// -->
+                            <button type="submit" class="btn btn-primary w-100">Login</button>
+                        </div>
                     </form>
-                  
-                      
-                       <a href="/login" class="btn w-100 btn-light font-sm">
-                            <!-- <svg aria-hidden="true" class="icon-svg" width="20" height="20" viewBox="0 0 20 20"> -->
-                                <path d="M3 1a2 2 0 00-2 2v12c0 1.1.9 2 2 2h12a2 2 0 002-2V3a2 2 0 00-2-2H3zm6.55 16v-6.2H7.46V8.4h2.09V6.61c0-2.07 1.26-3.2 3.1-3.2.88 0 1.64.07 1.87.1v2.16h-1.29c-1 0-1.19.48-1.19 1.18V8.4h2.39l-.31 2.42h-2.08V17h-2.5z" fill="#4167B2"></path>
-                            </svg> 
-                        </a>
-                    </div>
-                    <p class="text-center mb-4">Don't have account? <a href="/register">Sign up</a></p>
+
+                    <!-- Static Google Sign-In Button -->
+                    <a href="#" class="google-signin w-100 text-center">
+                        <img src="https://www.google.com/s2/favicons?domain=google.com" alt="Google">
+                        Sign in with Google
+                    </a>
+
+                    <p class="text-center mt-3 mb-0">Don't have an account? <a href="/register" class="text-primary">Sign up</a></p>
                 </div>
             </div>
         </section>
         <footer class="main-footer text-center">
             <p class="font-xs">
-                <script>
-                document.write(new Date().getFullYear())
-                </script> ©, Evara - HTML Ecommerce Template .
+                <script>document.write(new Date().getFullYear())</script> ©, Evara - HTML Ecommerce Template
             </p>
-            <p class="font-xs mb-30">All rights reserved</p>
+            <p class="font-xs mb-0">All rights reserved</p>
         </footer>
     </main>
-    <style>
-      
-        .btn {
-            padding: 10px 20px; 
-            font-size: 14px;
-        }
 
-        .btn-light {
-            background-color: #f8f9fa; 
-            color: #212529; 
-            border-color: #dee2e6; 
-        }
-
-        .btn-primary {
-            background-color: #007bff; 
-            border-color: #007bff;
-        }
-        .card-login {
-            max-width: 400px; 
-            margin: auto; 
-        }
-
-        .btn-login {
-            width: 100px; 
-        }
-    </style>
     <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/vendors/jquery.fullscreen.min.js"></script>
-
-    <!-- Template  JS -->
     <script src="/admin-assets/js/main.js?v=3.4"></script>
-    <script src=""></script>
-    <!-- Main Script -->
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- 
-
-
-<main class="main">
-    <div class="page-header breadcrumb-wrap">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="index.html" rel="nofollow">Home</a>
-                <span></span> Pages
-                <span></span> Login / Register
-            </div>
-        </div>
-    </div>
-    <section class="pt-150 pb-150">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 m-auto">
-                    <div class="row">
-                        <div class="col-lg-5">
-                            <div class="login_wrap widget-taber-content p-30 background-white border-radius-10 mb-md-5 mb-lg-0 mb-sm-5">
-                                <div class="padding_eight_all bg-white">
-                                    <div class="heading_s1">
-                                        <h3 class="mb-30">Login</h3>
-                                    </div>
-                                    <form method="post" action="">
-                                        <div class="form-group">
-                                            <input type="text" required="" name="email" placeholder="Your Email">
-                                        </div>
-                                        <div class="form-group">
-                                            <input required="" type="password" name="password" placeholder="Password">
-                                        </div>
-                                        <div class="login_footer form-group">
-                                            <div class="chek-form">
-                                                <div class="custome-checkbox">
-                                                    <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox1" value="">
-                                                    <label class="form-check-label" for="exampleCheckbox1"><span>Remember me</span></label>
-                                                </div>
-                                            </div>
-                                            <a class="text-muted" href="#">Forgot password?</a>
-                                        </div>
-                                        <div class="form-group">
-                                            <button type="submit" class="btn btn-fill-out btn-block hover-up" name="login">Log in</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-</main>
- -->

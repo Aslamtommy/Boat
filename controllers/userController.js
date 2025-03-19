@@ -188,7 +188,9 @@ const verifyOtp = async (req, res) => {
     if (otpData) {
       res.redirect("/login");
     } else {
-      res.status(400).render("otp", { alert: "Invalid otp" });
+
+
+      res.status(400).render("otp", { email: req.session.userdetails.email,alert: "Invalid otp" });
     }
   } catch (error) {
     console.log(error.message);
@@ -369,6 +371,7 @@ const verifyemail = async (req, res) => {
       console.log(error.message);
   }
 }
+
 const verifyotp = async (req, res) => {
   try {
     const userProvidedOtp = req.body.otp;
@@ -423,13 +426,18 @@ const shop = async (req, res) => {
     // Fetch all categories that are not blocked
     const categoryData = await category.find({ isBlocked: 0 });
 
+    // Filter out products belonging to blocked categories
+    const filteredProductData = productData.filter(product => {
+      return categoryData.some(category => category._id.equals(product.category._id));
+    });
+
     // Fetch user data using the session user ID
     const userId = req.session.user_id; // Assuming user ID is stored in session
     const userData = await User.find({ _id: userId });
 
-    // Render the shop page with product, category, and user data
+    // Render the shop page with filtered product, category, and user data
     res.render('shop', {
-      products: productData,
+      products: filteredProductData,
       userData,
       category: categoryData,
       searchQuery // Pass the search query to the template for display purposes
@@ -439,6 +447,7 @@ const shop = async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 }
+
 
 
 const sortshop = async (req, res) => {

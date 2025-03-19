@@ -1,158 +1,126 @@
 ﻿<%- include('../layouts/header') %>
-    <main class="main">
-        <div class="page-header breadcrumb-wrap">
-            <div class="container">
-                <div class="breadcrumb">
-                    <a href="index.html" rel="nofollow">Home</a>
-                    <span></span> Pages
-                    <span></span> Login / Register
-                </div>
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html" rel="nofollow">Home</a>
+                <span></span> Pages
+                <span></span> Login / Register
             </div>
         </div>
-        <section class="pt-40 pb-40 ">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-10 m-auto">
-                        <div class="row">
-                            <div class="col-lg-6 offset-lg-3">
-                                <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
-                                    <div class="padding_eight_all bg-white">
-                                        <div class="heading_s1">
-                                            <h3 class="mb-30">Create an Account</h3>
+    </div>
+    <section class="pt-40 pb-40">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="login_wrap widget-taber-content p-35 background-white border-radius-10 shadow-sm">
+                        <div class="padding_eight_all bg-white">
+                            <div class="heading_s1 text-center">
+                                <h3 class="mb-20 fw-bold">Create Your Account</h3>
+                                <p class="text-muted mb-30">Join us today with ease and elegance</p>
+                            </div>
+                            <% if (locals.message) { %>
+                                <div class="error-message alert alert-danger text-center">
+                                    <%= message %>
+                                </div>
+                            <% } %>
+                            <form id="registrationForm" method="post" onsubmit="return validateForm()">
+                                <div class="form-group mb-20">
+                                    <input type="text" name="name" id="name" class="form-control form-control-lg border-radius-5" placeholder="Username">
+                                    <div id="nameError" class="error-message text-danger mt-1"></div>
+                                </div>
+                                <div class="form-group mb-20">
+                                    <input type="text" name="email" id="email" class="form-control form-control-lg border-radius-5" placeholder="Email Address">
+                                    <div id="emailError" class="error-message text-danger mt-1"></div>
+                                </div>
+                                <div class="form-group mb-20">
+                                    <input type="text" name="Phone" id="phone" class="form-control form-control-lg border-radius-5" placeholder="Phone Number">
+                                    <div id="phoneError" class="error-message text-danger mt-1"></div>
+                                </div>
+                                <div class="form-group mb-20">
+                                    <input type="password" name="Password" id="password" class="form-control form-control-lg border-radius-5" placeholder="Password">
+                                    <div id="passwordError" class="error-message text-danger mt-1"></div>
+                                </div>
+                                <div class="form-group mb-20">
+                                    <input type="password" name="confirmPassword" id="confirmPassword" class="form-control form-control-lg border-radius-5" placeholder="Confirm Password">
+                                    <div id="confirmPasswordError" class="error-message text-danger mt-1"></div>
+                                </div>
+                                <div class="login_footer form-group mb-25">
+                                    <div class="chek-form text-center">
+                                        <div class="custome-checkbox">
+                                            <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox12" value="">
+                                            <label class="form-check-label text-muted" for="exampleCheckbox12">I agree to the <a href="page-privacy-policy.html" class="text-primary">Terms & Policy</a></label>
                                         </div>
-                                        <% if (locals.message) { %>
-                                            <div class="error-message">
-                                              <%= message %>
-                                            </div>
-                                          <% } %>
-                                        <form id="registrationForm" method="post" onsubmit="return validateForm()">
-                                            <div class="form-group">
-                                                <input type="text"  name="name" id="name" placeholder="Username">
-                                                <div id="nameError" class="error-message" ></div>
-                                            </div>
-                                            <div class="form-group">
-                                                <input type="text"  name="email" id="email" placeholder="Email">
-                                                <div id="emailError" class="error-message" ></div>
-                                            </div>
-                                            <div class="form-group">
-                                                <input  type="text" name="Phone" id="phone" placeholder="Phone">
-                                                <div id="phoneError" class="error-message"></div>
-                                                
-                                            </div>
-                                            <div class="form-group">
-                                                <input  type="password" name="Password" id="password" placeholder="Password">
-                                                <div id="passwordError" class="error-message"></div>
-                                            </div>
-                                            <div class="form-group">
-                                                <input  type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm password">
-                                                <div id="confirmPasswordError" class="error-message"></div>
-                                            </div>
-
-                                            <div class="login_footer form-group">
-                                                <div class="chek-form">
-                                                    <div class="custome-checkbox">
-                                                        <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox12" value="">
-                                                        <label class="form-check-label" for="exampleCheckbox12"><span>I agree to terms &amp; Policy.</span></label>
-                                                    </div>
-                                                </div>
-                                                <a href="page-privacy-policy.html"><i class="fi-rs-book-alt mr-5 text-muted"></i>Lean more</a>
-                                            </div>
-                                            <div class="form-group">
-                                                <button type="submit" class="btn btn-fill-out btn-block hover-up" name="login"> Register</button>
-                                            </div>
-                                        </form>
-                                        <div class="divider-text-center mt-15 mb-15">
-                                            <span> or</span>
-                                        </div>
-                                        <!-- <ul class="btn-login list_none text-center mb-15">
-                                            <li><a href="#" class="btn btn-facebook hover-up mb-lg-0 mb-sm-4">Login With Facebook</a></li>
-                                            <li><a href="#" onclick="handleGoogleLogin()" class="btn btn-google hover-up">Login With Google</a></li>
-                                        </ul> -->
-                                        <div class="text-muted text-center">Already have an account? <a href="/login">Sign in now</a></div>
                                     </div>
                                 </div>
-                            </div>
+                                <div class="form-group mb-25">
+                                    <button type="submit" class="btn btn-fill-out btn-block btn-lg border-radius-5 hover-up fw-bold">Register Now</button>
+                                </div>
+                                <div class="divider-text-center my-20 position-relative">
+                                    <span class="bg-white px-3 position-relative z-index-1 text-muted">or</span>
+                                    <hr class="position-absolute w-100 top-50 start-0 border-top">
+                                </div>
+                                <div class="text-center mb-25">
+                                    <a href="#" onclick="handleGoogleLogin()" class="btn btn-outline-secondary btn-lg border-radius-5 hover-up d-inline-flex align-items-center">
+                                        <img src="https://www.google.com/favicon.ico" alt="Google Icon" class="me-2" style="width: 20px; height: 20px;">
+                                        Sign in with Google
+                                    </a>
+                                </div>
+                                <div class="text-muted text-center">Already have an account? <a href="/login" class="text-primary fw-bold">Sign in</a></div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
-  
+        </div>
+    </section>
+</main>
 
-    <script>
-        function validateForm() {
-            let name = document.getElementById("name").value.trim();
-            let email = document.getElementById("email").value.trim();
-            let phone = document.getElementById("phone").value.trim();
-            let password = document.getElementById("password").value.trim();
-            let confirmPassword = document.getElementById("confirmPassword").value.trim();
-        
-           
-            let nameError = "";
-            let emailError = "";
-            let phoneError = "";
-            let passwordError = "";
-            let confirmPasswordError = "";
-        
-          
-            if (name === "") {
-                nameError = "Please enter your username";
-            }
-            if (email === "") {
-                emailError = "Please enter your email";
-            } else if (!isValidEmail(email)) {
-                emailError = "Please enter a valid email address";
-            }
-            if (phone === "") {
-                phoneError = "Please enter your phone number";
-            } else if (!isValidPhone(phone)) {
-                phoneError = "Please enter a valid 10-digit phone number";
-            }
-            if (password === "") {
-                passwordError = "Please enter a password";
-            } else if (!isStrongPassword(password)) {
-                passwordError = "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character";
-            }
-            if (confirmPassword === "") {
-                confirmPasswordError = "Please confirm your password";
-            } else if (confirmPassword !== password) {
-                confirmPasswordError = "Passwords do not match";
-            }
-        
-            // Update error message elements with error messages
-            document.getElementById("nameError").innerHTML = nameError;
-            document.getElementById("emailError").innerHTML = emailError;
-            document.getElementById("phoneError").innerHTML = phoneError;
-            document.getElementById("passwordError").innerHTML = passwordError;
-            document.getElementById("confirmPasswordError").innerHTML = confirmPasswordError;
-        
-            // Checking  any error messages exist
-            if (nameError || emailError || phoneError || passwordError || confirmPasswordError) {
-                return false; 
-            }
-        
-            return true; 
-        }
-        
-        function isValidEmail(email) {
-           
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        }
-        
-        function isValidPhone(phone) {
-          
-            return /^\d{10}$/.test(phone);
-        }
-        
-        function isStrongPassword(password) {
+<script>
+    function validateForm() {
+        let name = document.getElementById("name").value.trim();
+        let email = document.getElementById("email").value.trim();
+        let phone = document.getElementById("phone").value.trim();
+        let password = document.getElementById("password").value.trim();
+        let confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-            return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+}{"':;?/><,.[\]\-\\]).{8,}$/.test(password);
-        }
-        </script>
+        let nameError = "";
+        let emailError = "";
+        let phoneError = "";
+        let passwordError = "";
+        let confirmPasswordError = "";
 
-       
-        
+        if (name === "") nameError = "Please enter your username";
+        if (email === "") emailError = "Please enter your email";
+        else if (!isValidEmail(email)) emailError = "Please enter a valid email address";
+        if (phone === "") phoneError = "Please enter your phone number";
+        else if (!isValidPhone(phone)) phoneError = "Please enter a valid 10-digit phone number";
+        if (password === "") passwordError = "Please enter a password";
+        else if (!isStrongPassword(password)) passwordError = "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character";
+        if (confirmPassword === "") confirmPasswordError = "Please confirm your password";
+        else if (confirmPassword !== password) confirmPasswordError = "Passwords do not match";
+
+        document.getElementById("nameError").innerHTML = nameError;
+        document.getElementById("emailError").innerHTML = emailError;
+        document.getElementById("phoneError").innerHTML = emailError;
+        document.getElementById("passwordError").innerHTML = passwordError;
+        document.getElementById("confirmPasswordError").innerHTML = confirmPasswordError;
+
+        if (nameError || emailError || phoneError || passwordError || confirmPasswordError) return false;
+        return true;
+    }
+
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function isValidPhone(phone) {
+        return /^\d{10}$/.test(phone);
+    }
+
+    function isStrongPassword(password) {
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+}{"':;?/><,.[\]\-\\]).{8,}$/.test(password);
+    }
+</script>
+
 <%- include('../layouts/footer') %>
-
-

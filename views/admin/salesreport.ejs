@@ -1,280 +1,644 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <title>Evara Dashboard</title>
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta property="og:title" content="">
-    <meta property="og:type" content="">
-    <meta property="og:url" content="">
-    <meta property="og:image" content="">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sales report dashboard - Evara Ecommerce Platform">
+    <title>Sales Report - Evara Dashboard</title>
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="/admin-assets///imgs/theme/favicon.svg">
-    <!-- Template CSS -->
-    <link href="/admin-assets///css/main.css" rel="stylesheet" type="text/css" />
-</head>
+    <link rel="shortcut icon" type="image/x-icon" href="/admin-assets/imgs/theme/favicon.svg">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .screen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        /* Sidebar */
+        .navbar-aside {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #fff;
+            border-right: 1px solid #e5e7eb;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-aside .aside-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .navbar-aside .logo {
+            width: 120px;
+        }
+
+        .btn-aside-minimize {
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-aside-minimize i {
+            font-size: 20px;
+            color: #6b7280;
+        }
+
+        .menu-aside {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            margin-bottom: 5px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            font-size: 14px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .menu-link i {
+            margin-right: 10px;
+            color: #00c4cc;
+        }
+
+        .menu-link:hover, .menu-item.active .menu-link {
+            background-color: #f1f5f9;
+            color: #00c4cc;
+        }
+
+        .menu-link:hover i, .menu-item.active .menu-link i {
+            color: #1a8b90;
+        }
+
+        /* Main Content */
+        .main-wrap {
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-header {
+            background-color: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .col-search {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .searchform .input-group {
+            position: relative;
+        }
+
+        .searchform .form-control {
+            padding: 10px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .searchform .btn-light {
+            background-color: #f9fafb;
+            border: 1px solid #d1d5db;
+            border-left: none;
+            border-radius: 0 8px 8px 0;
+            padding: 0 15px;
+        }
+
+        .col-nav .nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .col-nav .nav-link {
+            color: #6b7280;
+            font-size: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .col-nav .nav-link:hover {
+            color: #00c4cc;
+        }
+
+        .dropdown-toggle::after {
+            display: none;
+        }
+
+        .dropdown-menu {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-item {
+            font-size: 14px;
+            color: #4b5563;
+            padding: 8px 15px;
+        }
+
+        .dropdown-item img {
+            width: 20px;
+            margin-right: 10px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f1f5f9;
+            color: #00c4cc;
+        }
+
+        .dropdown-item.text-danger {
+            color: #ef4444;
+        }
+
+        .btn-mobile {
+            display: none;
+        }
+
+        /* Content Section */
+        .content-main {
+            padding: 30px 20px;
+        }
+
+        .content-header {
+            margin-bottom: 30px;
+        }
+
+        .content-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .card {
+            background-color: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+        }
+
+        .card-header h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            font-size: 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table th {
+            font-weight: 600;
+            color: #374151;
+            background-color: #f9fafb;
+        }
+
+        .table td {
+            color: #4b5563;
+        }
+
+        .table tr:last-child td {
+            font-size: 16px;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* Filter Section */
+        .filter-box {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .filter-box label {
+            font-size: 14px;
+            color: #4b5563;
+            margin-right: 10px;
+        }
+
+        .filter-box input[type="date"] {
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .filter-box .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .custom_select {
+            margin-bottom: 20px;
+        }
+
+        .form-select {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #00c4cc;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #1a8b90;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-success {
+            background-color: #22c55e;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Footer */
+        .main-footer {
+            background-color: #fff;
+            border-top: 1px solid #e5e7eb;
+            padding: 15px 20px;
+            font-size: 13px;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .text-sm-end {
+            text-align: right;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 991px) {
+            .navbar-aside {
+                transform: translateX(-100%);
+            }
+
+            .main-wrap {
+                margin-left: 0;
+            }
+
+            .btn-mobile {
+                display: inline-block;
+            }
+
+            .col-search {
+                max-width: 100%;
+            }
+
+            .filter-box {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .table th, .table td {
+                font-size: 13px;
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .table th, .table td {
+                font-size: 12px;
+                padding: 6px;
+            }
+
+            .btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
 <body>
     <div class="screen-overlay"></div>
     <aside class="navbar-aside" id="offcanvas_aside">
         <div class="aside-top">
-            <a href="index.html" class="brand-wrap">
-                <img src="/admin-assets///imgs/theme/logo.svg" class="logo" alt="Evara Dashboard">
+            <a href="/admin/adminhome" class="brand-wrap">
+                <img src="/admin-assets/imgs/theme/logo.svg" class="logo" alt="Evara Dashboard">
             </a>
             <div>
-                <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+                <button class="btn btn-icon btn-aside-minimize"> 
+                    <i class="material-icons md-menu_open"></i> 
+                </button>
             </div>
         </div>
         <nav>
             <ul class="menu-aside">
                 <li class="menu-item">
-                    <a class="menu-link" href="/admin/adminhome"> <i class="icon material-icons md-home"></i>
+                    <a class="menu-link" href="/admin/adminhome"> 
+                        <i class="material-icons md-home"></i>
                         <span class="text">Dashboard</span>
                     </a>
                 </li>
-                <li class="menu-item  ">
-                    <a class="menu-link" href="page-products-list.html"> <i class="icon material-icons md-shopping_bag"></i>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/productsList"> 
+                        <i class="material-icons md-shopping_bag"></i>
                         <span class="text">Products</span>
                     </a>
-                    <!-- <div class="submenu">
-                        <a href="page-products-list.html" class="active">Product List</a>
-                        <a href="page-products-grid.html">Product grid</a>
-                        <a href="page-products-grid-2.html">Product grid 2</a>
-                        <a href="page-categories.html">Categories</a>
-                    </div> -->
                 </li>
-                <li class="menu-item ">
-                    <a class="menu-link" href="/admin/orderlist"> <i class="icon material-icons md-shopping_cart"></i>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/orderlist"> 
+                        <i class="material-icons md-shopping_cart"></i>
                         <span class="text">Orders</span>
                     </a>
-                  
                 </li>
-                <li class="menu-item ">
-                    <a class="menu-link" href="/admin/userlist"> <i class="icon material-icons md-store"></i>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/userlist"> 
+                        <i class="material-icons md-store"></i>
                         <span class="text">Users</span>
                     </a>
-                 
-                <li class="menu-item ">
-                    <a class="menu-link" href="/admin/addproducts"> <i class="icon material-icons md-add_box"></i>
-                        <span class="text">Add product</span>
-                    </a>
-                 
-                  
                 </li>
-            <li class="menu-item">
-                    <a class="menu-link" href="/admin/categories"> <i class="icon material-icons md-monetization_on"></i>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/addproducts"> 
+                        <i class="material-icons md-add_box"></i>
+                        <span class="text">Add Product</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/categories"> 
+                        <i class="material-icons md-category"></i>
                         <span class="text">Category</span>
                     </a>
-                
-                </li> 
-
-
-                <li class="menu-item ">
-                    <a class="menu-link" href="/admin/couponlist"> <i class="icon material-icons md-monetization_on"></i>
-                        <span class="text">Coupen</span>
-                    </a>
-                  
                 </li>
-
-
-                <li class="menu-item ">
-                    <a class="menu-link" href="/admin/addcoupon"> <i class="icon material-icons md-monetization_on"></i>
-                        <span class="text">AddCoupen</span>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/couponlist"> 
+                        <i class="material-icons md-local_offer"></i>
+                        <span class="text">Coupon</span>
                     </a>
-                  
                 </li>
-                <li class="menu-item active ">
-                    <a class="menu-link" href="/admin/salesreport"> <i class="icon material-icons md-monetization_on"></i>
-                        <span class="text">Salesreport</span>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/addcoupon"> 
+                        <i class="material-icons md-add_circle"></i>
+                        <span class="text">Add Coupon</span>
                     </a>
-                  
                 </li>
-
-
-               
-            <hr>
-            <ul class="menu-aside">
-             
+                <li class="menu-item active">
+                    <a class="menu-link" href="/admin/salesreport"> 
+                        <i class="material-icons md-assessment"></i>
+                        <span class="text">Sales Report</span>
+                    </a>
+                </li>
             </ul>
-            <br>
-            <br>
+            <hr>
         </nav>
     </aside>
+
     <main class="main-wrap">
         <header class="main-header navbar">
             <div class="col-search">
                 <form class="searchform">
                     <div class="input-group">
                         <input list="search_terms" type="text" class="form-control" placeholder="Search term">
-                        <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
+                        <button class="btn btn-light bg" type="button"> 
+                            <i class="material-icons md-search"></i>
+                        </button>
                     </div>
                     <datalist id="search_terms">
                         <option value="Products">
                         <option value="New orders">
-                        <option value="Apple iphone">
+                        <option value="Apple iPhone">
                         <option value="Ahmed Hassan">
                     </datalist>
                 </form>
             </div>
             <div class="col-nav">
-                <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i class="material-icons md-apps"></i> </button>
+                <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> 
+                    <i class="material-icons md-apps"></i> 
+                </button>
                 <ul class="nav">
                     <li class="nav-item">
                         <a class="nav-link btn-icon" href="#">
                             <i class="material-icons md-notifications animation-shake"></i>
-                           
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
+                        <a class="nav-link btn-icon darkmode" href="#"> 
+                            <i class="material-icons md-nights_stay"></i> 
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
+                        <a href="#" class="requestfullscreen nav-link btn-icon">
+                            <i class="material-icons md-cast"></i>
+                        </a>
                     </li>
                     <li class="dropdown nav-item">
-                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false"><i class="material-icons md-public"></i></a>
+                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false">
+                            <i class="material-icons md-public"></i>
+                        </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
-                            <a class="dropdown-item text-brand" href="#"><img src="/admin-assets///imgs/theme/flag-us.png" alt="English">English</a>
-                            <a class="dropdown-item" href="#"><img src="/admin-assets///imgs/theme/flag-fr.png" alt="Français">Français</a>
-                            <a class="dropdown-item" href="#"><img src="/admin-assets///imgs/theme/flag-jp.png" alt="Français">日本語</a>
-                            <a class="dropdown-item" href="#"><img src="/admin-assets///imgs/theme/flag-cn.png" alt="Français">中国人</a>
+                            <a class="dropdown-item text-brand" href="#"><img src="/admin-assets/imgs/theme/flag-us.png" alt="English">English</a>
+                            <a class="dropdown-item" href="#"><img src="/admin-assets/imgs/theme/flag-fr.png" alt="Français">Français</a>
+                            <a class="dropdown-item" href="#"><img src="/admin-assets/imgs/theme/flag-jp.png" alt="日本語">日本語</a>
+                            <a class="dropdown-item" href="#"><img src="/admin-assets/imgs/theme/flag-cn.png" alt="中国人">中国人</a>
                         </div>
                     </li>
                     <li class="dropdown nav-item">
-         
+                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false">
+                            <i class="material-icons md-person"></i>
+                        </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
                             <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
                             <a class="dropdown-item" href="#"><i class="material-icons md-settings"></i>Account Settings</a>
                             <a class="dropdown-item" href="#"><i class="material-icons md-account_balance_wallet"></i>Wallet</a>
                             <a class="dropdown-item" href="#"><i class="material-icons md-receipt"></i>Billing</a>
-                            <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Help center</a>
+                            <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Help Center</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-danger" href="#"><i class="material-icons md-exit_to_app"></i>Logout</a>
+                            <a class="dropdown-item text-danger" href="/admin/adminLogout"><i class="material-icons md-exit_to_app"></i>Logout</a>
                         </div>
                     </li>
                 </ul>
             </div>
         </header>
+
         <section class="content-main">
             <div class="content-header">
-                <div>
-                    <h2 class="content-title card-title">Sales Report</h2>
-                   
-                </div>
-            
+                <h2 class="content-title">Sales Report</h2>
+            </div>
 
-                </div>
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <div class="col-md-2 col-8">
-                                <div class="custom_select">
-
-                                    <div class="filter-box">
-                                        <form id="customDateForm" action="">
-                                            <label for="startDate">Start Date:</label>
-                                            <input type="date" id="startDate" name="startDate">
-                                            <label for="endDate">End Date:</label>
-                                            <input type="date" id="endDate" name="endDate">
-                                            <button type="submit" class="btn btn-sm">Go</button>
-                                        </form>
-                                    </div>
-
-
-                                    <select class="form-select" id="reportSelect" onchange="selectedReport()">
-                                        <% if(typeof option != undefined){ %>
-                                        <option><%= option %></option>
-        
-                                            <% } else { %>
-                                                <option>All</option>
-                                             <% } %>
-                                        
-                                        <option>Week</option>
-                                        <option>Month</option>
-                                        <option>Daily</option>
-                                    </select>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="filter-box">
+                        <form id="customDateForm" action="/admin/selectedReport" method="GET">
+                            <div class="d-flex align-items-center gap-2">
+                                <div>
+                                    <label for="startDate" class="form-label">Start Date:</label>
+                                    <input type="date" id="startDate" name="startDate" class="form-control">
                                 </div>
+                                <div>
+                                    <label for="endDate" class="form-label">End Date:</label>
+                                    <input type="date" id="endDate" name="endDate" class="form-control">
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-primary">Go</button>
                             </div>
-                            <table class="table table-bordered table-striped mt-4">
-                                <thead>
-                                    <tr>
-                                        <th>OrderId</th>
-                                        <th>UserEmail</th>
-                                        <th>Date</th>
-                                        <th>Payment Method</th>
-                                        <th>Discount</th>
-                                        <th>Total Sale</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="salesReportContainer">
-                                    <% orderData.forEach(sale => { %>
-                                        <tr>
-                                            <td><%= sale.orderId %></td>
-                                            <td><%= sale.email %></td>
-                                            <td><%= new Date(sale.date).toLocaleDateString() %></td>
-                                            <td><%= sale.payMethod %></td>
-                                            <td><%= sale.discount %></td>
-                                            <td><%= sale.total %></td>
-                                        </tr>
-                                    <% }); %>
+                        </form>
+                    </div>
 
-                                    <tr>
-                                        <td colspan="5" style="text-align: right; font-size: large; font-weight: bold;">Overall Sales Count:</td>
-                                        <td style="font-size: large;"><%= overallSalesCount%></td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="5" style="text-align: right; font-size: large; font-weight: bold;">Overall Order Amount:</td>
-                                        <td style="font-size: large;"><%= overallOrderAmount %></td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="5" style="text-align: right; font-size: large; font-weight: bold;">Overall Discount:</td>
-                                        <td style="font-size: large;"><%=   overallDiscount %></td>
-                                    </tr>
-                                    
-                                    
+                    <div class="custom_select mb-4">
+                        <select class="form-select" id="reportSelect" onchange="selectedReport()">
+                            <% if (typeof option !== 'undefined' && option) { %>
+                                <option><%= option %></option>
+                            <% } else { %>
+                                <option selected>All</option>
+                            <% } %>
+                            <option>Week</option>
+                            <option>Month</option>
+                            <option>Daily</option>
+                        </select>
+                    </div>
 
-                                </tbody>
-                            </table>
-                            
-                            
-                            <div class="col-md-2 col-3 d-flex">
-                                <button onclick="downloadPdf()" class="btn btn-danger m-2"> Pdf</button>
-                                <button onclick="downloadExel()" class="btn btn-success m-2"> Exel</button>
-                            </div>
-                        </div>
-                            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.19.0/pdf-lib.min.js"></script>
-                            <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.2/xlsx.full.min.js"></script>
-        
-        
-                           
-        
-                        </div>
-                    </div> <!-- card-body end// -->
-                </div>            
-           
-                      
-            <!-- <div class="pagination-area mt-30 mb-50">
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-start">
-                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                        <li class="page-item"><a class="page-link" href="#">02</a></li>
-                        <li class="page-item"><a class="page-link" href="#">03</a></li>
-                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                        <li class="page-item"><a class="page-link" href="#">16</a></li>
-                        <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
-                    </ul>
-                </nav>
-            </div> -->
-        </section> <!-- content-main end// -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>User Email</th>
+                                    <th>Date</th>
+                                    <th>Payment Method</th>
+                                    <th>Discount</th>
+                                    <th>Total Sale</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesReportContainer">
+                                <% orderData.forEach(sale => { %>
+                                    <tr>
+                                        <td><%= sale.orderId %></td>
+                                        <td><%= sale.email %></td>
+                                        <td><%= new Date(sale.date).toLocaleDateString() %></td>
+                                        <td><%= sale.payMethod %></td>
+                                        <td><%= sale.discount %></td>
+                                        <td><%= sale.total %></td>
+                                    </tr>
+                                <% }); %>
+                                <tr>
+                                    <td colspan="5" style="text-align: right; font-weight: bold;">Overall Sales Count:</td>
+                                    <td><%= overallSalesCount %></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" style="text-align: right; font-weight: bold;">Overall Order Amount:</td>
+                                    <td><%= overallOrderAmount %></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" style="text-align: right; font-weight: bold;">Overall Discount:</td>
+                                    <td><%= overallDiscount %></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="col-md-2 col-3 d-flex justify-content-end mt-3">
+                        <button onclick="downloadPdf()" class="btn btn-danger m-2">Download PDF</button>
+                        <button onclick="downloadExcel()" class="btn btn-success m-2">Download Excel</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <footer class="main-footer font-xs">
             <div class="row pb-30 pt-15">
-                <div class="col-sm-6">*
+                <div class="col-sm-6">
                     <script>
-                    document.write(new Date().getFullYear())
-                    </script> ©, Evara - HTML Ecommerce Template .
+                        document.write(new Date().getFullYear());
+                    </script> ©, Evara - HTML Ecommerce Platform.
                 </div>
                 <div class="col-sm-6">
                     <div class="text-sm-end">
@@ -284,55 +648,63 @@
             </div>
         </footer>
     </main>
-    <script src="/admin-assets///js/vendors/jquery-3.6.0.min.js"></script>
-    <script src="/admin-assets///js/vendors/bootstrap.bundle.min.js"></script>
-    <script src="/admin-assets///js/vendors/select2.min.js"></script>
-    <script src="/admin-assets///js/vendors/perfect-scrollbar.js"></script>
-    <script src="/admin-assets///js/vendors/jquery.fullscreen.min.js"></script>
+
+    <!-- Vendor JS -->
+    <script src="/admin-assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/admin-assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/admin-assets/js/vendors/select2.min.js"></script>
+    <script src="/admin-assets/js/vendors/perfect-scrollbar.js"></script>
+    <script src="/admin-assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.19.0/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.2/xlsx.full.min.js"></script>
     <!-- Main Script -->
-    <script src="/admin-assets///js/main.js" type="text/javascript"></script>
+    <script src="/admin-assets/js/main.js" type="text/javascript"></script>
+
+    <!-- Sales Report Script -->
+    <script>
+        function selectedReport() {
+            const selectElement = document.getElementById("reportSelect");
+            const selectedOption = selectElement.value;
+            window.location.href = `/admin/selectedReport?option=${selectedOption}`;
+        }
+
+        function downloadPdf() {
+            const selectElement = document.getElementById("reportSelect");
+            const selectedOption = selectElement.value;
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+            window.location.href = `/admin/downloadPdf?option=${selectedOption}&startDate=${startDate}&endDate=${endDate}`;
+        }
+
+        function downloadExcel() {
+            const selectElement = document.getElementById("reportSelect");
+            const selectedOption = selectElement.value;
+            window.location.href = `/admin/downloadExel?option=${selectedOption}`;
+        }
+
+        document.getElementById("customDateForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+            const url = `/admin/selectedReport?startDate=${startDate}&endDate=${endDate}`;
+            window.location.href = url;
+        });
+
+        // Sidebar Toggle for Mobile
+        document.querySelector('.btn-mobile').addEventListener('click', function() {
+            document.querySelector('.navbar-aside').style.transform = 'translateX(0)';
+            document.querySelector('.screen-overlay').style.display = 'block';
+        });
+
+        document.querySelector('.btn-aside-minimize').addEventListener('click', function() {
+            document.querySelector('.navbar-aside').style.transform = 'translateX(-100%)';
+            document.querySelector('.screen-overlay').style.display = 'none';
+        });
+
+        document.querySelector('.screen-overlay').addEventListener('click', function() {
+            document.querySelector('.navbar-aside').style.transform = 'translateX(-100%)';
+            this.style.display = 'none';
+        });
+    </script>
 </body>
-
 </html>
-
-
-<script>
-    function selectedReport(){
-        var selectElement = document.getElementById("reportSelect");
-            var selectedIndex = selectElement.selectedIndex;
-            var selectedOption = selectElement.options[selectedIndex].value;
-    window.location.href=`/admin/selectedReport?option=${selectedOption}`
-    }
-
-
-    function downloadPdf() {
-    var selectElement = document.getElementById("reportSelect");
-    var selectedIndex = selectElement.selectedIndex;
-    var selectedOption = selectElement.options[selectedIndex].value;
-    var startDate = document.getElementById("startDate").value; // Get the start date from an input field
-    var endDate = document.getElementById("endDate").value; // Get the end date from an input field
-    window.location.href = `/admin/downloadPdf?option=${selectedOption}&startDate=${startDate}&endDate=${endDate}`;
-}
-
-    function downloadExel(){
-        var selectElement = document.getElementById("reportSelect");
-            var selectedIndex = selectElement.selectedIndex;
-            var selectedOption = selectElement.options[selectedIndex].value;
-            window.location.href=`/admin/downloadExel?option=${selectedOption}`
-    }
-    document.getElementById("customDateForm").addEventListener("submit", function(event) {
-        // Prevent the default form submission behavior
-        event.preventDefault();
-
-        // Get the start and end date values
-        var startDate = document.getElementById("startDate").value;
-        var endDate = document.getElementById("endDate").value;
-
-        // Construct the URL with the query parameters
-        var url = "/admin/selectedReport?startDate=" + startDate + "&endDate=" + endDate;
-
-        // Redirect the user to the URL
-        window.location.href = url;
-    })
-
-</script>

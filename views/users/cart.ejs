@@ -1,9 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - boAt | Premium Audio Experience</title>
+    <meta name="description" content="Review your cart and checkout with boAt’s premium audio gear.">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <style>
+        /* Professional, Classic, and Project-Matched Styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f9f9f9;
+            color: #444;
+            margin: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        .mt-50 { margin-top: 50px; }
+        .mb-50 { margin-bottom: 50px; }
+        /* Breadcrumb */
+        .page-header {
+            background: #ffffff;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: #777;
+            padding: 0;
+        }
+        .breadcrumb a {
+            color: #00c4cc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .breadcrumb a:hover {
+            color: #1a8b90;
+        }
+        .breadcrumb span {
+            margin: 0 6px;
+            color: #aaa;
+        }
+        /* Main Section */
+        .cart-wrapper {
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .shopping-summery {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .shopping-summery th {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #444;
+            padding: 15px;
+            background: #fafafa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .shopping-summery td {
+            padding: 20px;
+            vertical-align: middle;
+        }
+        .product-thumbnail img {
+            max-width: 70px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .product-name h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        .product-name h5 a {
+            color: #444;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .product-name h5 a:hover {
+            color: #00c4cc;
+        }
+        .product-name p {
+            font-size: 0.85rem;
+            color: #777;
+            margin: 5px 0 0;
+        }
+        .price span {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #444;
+        }
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .control-btn {
+            background: #00c4cc;
+            color: #fff;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .control-btn:hover {
+            background: #1a8b90;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+        .detail-qty {
+            width: 50px;
+            height: 35px;
+            border: none;
+            background: #f1f1f1;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #444;
+        }
+        .out-of-stock-message {
+            font-size: 0.85rem;
+            color: #dc3545;
+            margin-top: 4px;
+            display: block;
+        }
+        .subtotal {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #444;
+        }
+        .action a {
+            color: #777;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+        .action a:hover {
+            color: #00c4cc;
+        }
+        /* Cart Actions */
+        .cart-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .clear-cart a {
+            color: #777;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .clear-cart a:hover {
+            color: #00c4cc;
+        }
+        .continue-shopping a {
+            background: #00c4cc;
+            color: #fff;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-decoration: none;
+        }
+        .continue-shopping a:hover {
+            background: #1a8b90;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        /* Cart Totals */
+        .cart-totals {
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+            padding: 30px;
+            max-width: 400px;
+            margin-left: auto;
+        }
+        .cart-totals h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00c4cc;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .cart-totals table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .cart-totals td {
+            padding: 12px 0;
+            font-size: 1rem;
+            color: #444;
+        }
+        .cart_total_label {
+            font-weight: 600;
+        }
+        .cart_total_amount {
+            text-align: right;
+        }
+        .cart_total_amount span {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #444;
+        }
+        .checkout-btn {
+            background: #00c4cc;
+            color: #fff;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        .checkout-btn:hover {
+            background: #1a8b90;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .checkout-btn i {
+            margin-right: 8px;
+        }
+        /* Footer */
+        footer.main {
+            background: #ffffff;
+            padding: 40px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        footer .widget-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #00c4cc;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        footer .footer-list {
+            list-style: none;
+            padding: 0;
+        }
+        footer .footer-list li a {
+            color: #777;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+        footer .footer-list li a:hover {
+            color: #00c4cc;
+        }
+        footer .mobile-social-icon {
+            display: flex;
+            gap: 12px;
+        }
+        footer .mobile-social-icon a {
+            transition: transform 0.3s ease;
+        }
+        footer .mobile-social-icon a:hover {
+            transform: scale(1.1);
+        }
+        footer .download-app {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        footer .download-app a {
+            transition: transform 0.3s ease;
+        }
+        footer .download-app a:hover {
+            transform: scale(1.05);
+        }
+        footer .footer-bottom {
+            padding-top: 20px;
+            margin-top: 30px;
+        }
+        footer .text-brand {
+            color: #00c4cc;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../layouts/header') %>
 
-<%- include('../layouts/header') %>
-    
     <main class="main">
-
-
         <div class="page-header breadcrumb-wrap">
             <div class="container">
                 <div class="breadcrumb">
@@ -17,8 +326,8 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12">
-                        <div class="table-responsive">
-                            <table class="table shopping-summery text-center clean">
+                        <div class="cart-wrapper">
+                            <table class="table shopping-summery text-center">
                                 <thead>
                                     <tr class="main-heading">
                                         <th scope="col">Image</th>
@@ -30,364 +339,227 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                              
-                                  
-                                     
-                                  
-                              
-                                 
-
-
-                                         
-                                            <tr>
-
-                     
-                     
-                     
-                                                <!-- Assuming your cart template iterates over each product in the cart -->
-                                            <!-- Assuming your cart template iterates over each product in the cart -->
-<!-- Assuming your cart template iterates over each product in the cart -->
-<% if (cart && cart.items && cart.items.length > 0) { %>                                          
-    <% cart.items.forEach(productData => { %>
-        <tr data-product-id="<%= productData.productId._id %>">
-            <td class="image product-thumbnail">
-                <% if (productData.productId.additionalimages && productData.productId.additionalimages.length > 0) { %>
-                    <img src="/<%= productData.productId.additionalimages[0] %>" alt="#">
-                <% } %>
-            </td>
-            <td class="product-des product-name">
-                <h5 class="product-name"><a href="shop-product-right.html"><%= productData.productId.name %></a></h5>
-                <p class="font-xs"><%= productData.productId.description %></p>
-            </td>
-            <td class="price" data-title="Price"><span><%= productData.productId.price %></span></td>
-            
-            <td class="text-center" data-title="Stock">
-                <!-- Add the available-stock element here -->
-                <span class="available-stock" style="display: none;"><%= productData.productId.stock %></span>
-
-                <% if (productData.quantity <= productData.productId.stock) { %>
-                    <!-- HTML structure for the quantity controls -->
-                    <div class="quantity-controls">
-                        <button class="btn btn-sm control-btn plus">+</button>
-                        <div class="detail-qty border radius m-auto">
-                             <!-- Quantity Display -->
-                            <div class="quantity-container">
-                                <span><%= productData.quantity %></span>
-                                <% if (productData.quantity === productData.productId.stock) { %>
-                                    <span class="out-of-stock-message">Out of Stock</span>
-                                <% } %>
+                                    <% if (cart && cart.items && cart.items.length > 0) { %>
+                                        <% cart.items.forEach(productData => { %>
+                                            <tr data-product-id="<%= productData.productId._id %>">
+                                                <td class="image product-thumbnail">
+                                                    <% if (productData.productId.additionalimages && productData.productId.additionalimages.length > 0) { %>
+                                                        <img src="/<%= productData.productId.additionalimages[0] %>" alt="<%= productData.productId.name %>">
+                                                    <% } %>
+                                                </td>
+                                                <td class="product-des product-name">
+                                                    <h5 class="product-name"><a href="shop-product-right.html"><%= productData.productId.name %></a></h5>
+                                                    <p><%= productData.productId.description %></p>
+                                                </td>
+                                                <td class="price" data-title="Price"><span>₹<%= productData.productId.price %></span></td>
+                                                <td class="text-center" data-title="Stock">
+                                                    <span class="available-stock" style="display: none;"><%= productData.productId.stock %></span>
+                                                    <% if (productData.quantity <= productData.productId.stock) { %>
+                                                        <div class="quantity-controls">
+                                                            <button class="control-btn minus">-</button>
+                                                            <div class="detail-qty">
+                                                                <span><%= productData.quantity %></span>
+                                                                <% if (productData.quantity === productData.productId.stock) { %>
+                                                                    <span class="out-of-stock-message">Max Stock</span>
+                                                                <% } %>
+                                                            </div>
+                                                            <button class="control-btn plus">+</button>
+                                                        </div>
+                                                    <% } else { %>
+                                                        <span class="out-of-stock-message">Out of Stock</span>
+                                                    <% } %>
+                                                </td>
+                                                <td class="text-right" data-title="Subtotal">
+                                                    <span class="subtotal">₹<%= productData.subTotal.toFixed(2) %></span>
+                                                </td>
+                                                <td class="action" data-title="Remove">
+                                                    <a href="/deletecart?id=<%= productData.productId._id %>"><i class="fi-rs-trash"></i></a>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="6">Your cart is empty</td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                            <div class="cart-actions">
+                                <div class="clear-cart">
+                                    <a href="/clearcart"><i class="fi-rs-cross-small"></i> Clear Cart</a>
+                                </div>
+                                <div class="continue-shopping">
+                                    <a href="/shop"><i class="fi-rs-shopping-bag mr-10"></i> Continue Shopping</a>
+                                </div>
                             </div>
                         </div>
-                        <button class="btn btn-sm control-btn minus">-</button>
-                    </div>
-                <% } else { %>
-                    <span class="out-of-stock-message">Out of Stock</span>
-                <% } %>
-            </td>
-            
-            <td class="text-right" data-title="Subtotal">
-                <span class="subtotal">$<%= productData.subTotal.toFixed(2) %></span>
-            </td>
-            
-            <td class="action" data-title="Remove">
-                <a href="/deletecart?id=<%= productData.productId._id %>" class="text-muted"><i class="fi-rs-trash"></i></a>
-            </td>
-        </tr>
-    <% }); %>
-<% } else { %>
-    <tr>
-        <td colspan="6">Your cart is empty</td>
-    </tr>
-<% } %>
-
-                                                
+                        <div class="cart-totals">
+                            <h4>Cart Totals</h4>
+                            <table class="table">
+                                <tbody>
                                     <tr>
-                                        <td colspan="6" class="text-end">
-                                            <a href="#" class="text-muted"> <i class="fi-rs-cross-small"></i> Clear Cart</a>
-                                        </td>
+                                        <td class="cart_total_label">Cart Subtotal</td>
+                                        <td class="cart_total_amount"><span>₹<%= totalSubtotal.toFixed(2) %></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cart_total_label">Shipping</td>
+                                        <td class="cart_total_amount"><i class="ti-gift mr-5"></i> Free Shipping</td>
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-                        <div class="cart-action text-end">
-                            
-                            <a class="btn " href="/shop"><i class="fi-rs-shopping-bag mr-10"></i>Continue Shopping</a>
-                        </div>
-                        <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
-                       
-                          
-                            <div class="col-lg-6 col-md-12">
-                                <div class="border p-md-4 p-30 border-radius cart-totals">
-                                    <div class="heading_s1 mb-3">
-                                        <h4>Cart Totals</h4>
-                                    </div>
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <tbody>
-                                               
-                                                <tr>
-                                                    <td class="cart_total_label">Cart Subtotal</td>
-                                                    <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">$<%= totalSubtotal.toFixed(2) %></span></td>
-                                                </tr>
-                                                
-                                                <tr>
-                                                    <td class="cart_total_label">Shipping</td>
-                                                    <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free Shipping</td>
-                                                </tr>
-                                                <!-- <tr>
-                                                    <td class="cart_total_label">Total</td>
-                                                    <td class="cart_total_amount"><strong><span class="font-xl fw-900 text-brand">$<%= totalSubtotal.toFixed(2) %></span></strong></td>
-                                                </tr> -->
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <a href="/checkoutpage" class="btn"> <i class="fi-rs-box-alt mr-10"></i> Proceed To CheckOut</a>
-                                </div>
-                            </div>
-                            
-                            
+                            <a href="/checkoutpage" class="checkout-btn"><i class="fi-rs-box-alt mr-10"></i> Proceed To Checkout</a>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
+
     <footer class="main">
-        <section class="newsletter p-30 text-white wow fadeIn animated">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-7 mb-md-3 mb-lg-0">
-                        <div class="row align-items-center">
-                            <div class="col flex-horizontal-center">
-                                <img class="icon-email" src="assets/imgs/theme/icons/icon-email.svg" alt="">
-                                <h4 class="font-size-20 mb-0 ml-3">Sign up to Newsletter</h4>
-                            </div>
-                            <div class="col my-4 my-md-0 des">
-                                <h5 class="font-size-15 ml-4 mb-0">...and receive <strong>$25 coupon for first shopping.</strong></h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-5">
-                        <!-- Subscribe Form -->
-                        <form class="form-subcriber d-flex wow fadeIn animated">
-                            <input type="email" class="form-control bg-white font-small" placeholder="Enter your email">
-                            <button class="btn bg-dark text-white" type="submit">Subscribe</button>
-                        </form>
-                        <!-- End Subscribe Form -->
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="section-padding footer-mid">
-            <div class="container pt-15 pb-20">
-                <div class="row">
-                    <div class="col-lg-4 col-md-6">
-                        <div class="widget-about font-md mb-md-5 mb-lg-0">
-                            <div class="logo logo-width-1 wow fadeIn animated">
-                                <a href="index.html"><img src="assets/imgs/theme/logo.svg" alt="logo"></a>
-                            </div>
-                            <h5 class="mt-20 mb-10 fw-600 text-grey-4 wow fadeIn animated">Contact</h5>
-                            <p class="wow fadeIn animated">
-                                <strong>Address: </strong>562 Wellington Road, Street 32, San Francisco
-                            </p>
-                            <p class="wow fadeIn animated">
-                                <strong>Phone: </strong>+01 2222 365 /(+91) 01 2345 6789
-                            </p>
-                            <p class="wow fadeIn animated">
-                                <strong>Hours: </strong>10:00 - 18:00, Mon - Sat
-                            </p>
-                            <h5 class="mb-10 mt-30 fw-600 text-grey-4 wow fadeIn animated">Follow Us</h5>
-                            <div class="mobile-social-icon wow fadeIn animated mb-sm-5 mb-md-0">
-                                <a href="#"><img src="assets/imgs/theme/icons/icon-facebook.svg" alt=""></a>
-                                <a href="#"><img src="assets/imgs/theme/icons/icon-twitter.svg" alt=""></a>
-                                <a href="#"><img src="assets/imgs/theme/icons/icon-instagram.svg" alt=""></a>
-                                <a href="#"><img src="assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a>
-                                <a href="#"><img src="assets/imgs/theme/icons/icon-youtube.svg" alt=""></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-3">
-                        <h5 class="widget-title wow fadeIn animated">About</h5>
-                        <ul class="footer-list wow fadeIn animated mb-sm-5 mb-md-0">
-                            <li><a href="#">About Us</a></li>
-                            <li><a href="#">Delivery Information</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Terms &amp; Conditions</a></li>
-                            <li><a href="#">Contact Us</a></li>
-                            <li><a href="#">Support Center</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-2  col-md-3">
-                        <h5 class="widget-title wow fadeIn animated">My Account</h5>
-                        <ul class="footer-list wow fadeIn animated">
-                            <li><a href="#">Sign In</a></li>
-                            <li><a href="#">View Cart</a></li>
-                            <li><a href="#">My Wishlist</a></li>
-                            <li><a href="#">Track My Order</a></li>
-                            <li><a href="#">Help</a></li>
-                            <li><a href="#">Order</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-4">
-                        <h5 class="widget-title wow fadeIn animated">Install App</h5>
-                        <div class="row">
-                            <div class="col-md-8 col-lg-12">
-                                <p class="wow fadeIn animated">From App Store or Google Play</p>
-                                <div class="download-app wow fadeIn animated">
-                                    <a href="#" class="hover-up mb-sm-4 mb-lg-0"><img class="active" src="assets/imgs/theme/app-store.jpg" alt=""></a>
-                                    <a href="#" class="hover-up"><img src="assets/imgs/theme/google-play.jpg" alt=""></a>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-12 mt-md-3 mt-lg-0">
-                                <p class="mb-20 wow fadeIn animated">Secured Payment Gateways</p>
-                                <img class="wow fadeIn animated" src="assets/imgs/theme/payment-method.png" alt="">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <div class="container pb-20 wow fadeIn animated">
+        <div class="container">
             <div class="row">
-                <div class="col-12 mb-20">
-                    <div class="footer-bottom"></div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="widget-about font-md mb-md-5 mb-lg-0">
+                        <div class="logo logo-width-1">
+                            <a href="index.html"><img src="assets/imgs/theme/logo.svg" alt="logo"></a>
+                        </div>
+                        <h5 class="mt-20 mb-10 fw-600 text-grey-4">Contact</h5>
+                        <p><strong>Address:</strong> 562 Wellington Road, Street 32, San Francisco</p>
+                        <p><strong>Phone:</strong> +01 2222 365 / (+91) 01 2345 6789</p>
+                        <p><strong>Hours:</strong> 10:00 - 18:00, Mon - Sat</p>
+                        <h5 class="mb-10 mt-30 fw-600 text-grey-4">Follow Us</h5>
+                        <div class="mobile-social-icon">
+                            <a href="#"><img src="assets/imgs/theme/icons/icon-facebook.svg" alt=""></a>
+                            <a href="#"><img src="assets/imgs/theme/icons/icon-twitter.svg" alt=""></a>
+                            <a href="#"><img src="assets/imgs/theme/icons/icon-instagram.svg" alt=""></a>
+                            <a href="#"><img src="assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a>
+                            <a href="#"><img src="assets/imgs/theme/icons/icon-youtube.svg" alt=""></a>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-lg-6">
-                    <p class="float-md-left font-sm text-muted mb-0">&copy; 2022, <strong class="text-brand">Evara</strong> - HTML Ecommerce Template </p>
+                <div class="col-lg-2 col-md-3">
+                    <h5 class="widget-title">About</h5>
+                    <ul class="footer-list mb-sm-5 mb-md-0">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Delivery Information</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Support Center</a></li>
+                    </ul>
                 </div>
-                <div class="col-lg-6">
-                    <p class="text-lg-end text-start font-sm text-muted mb-0">
-                        Designed by <a href="http://alithemes.com" target="_blank">Alithemes.com</a>. All rights reserved
-                    </p>
+                <div class="col-lg-2 col-md-3">
+                    <h5 class="widget-title">My Account</h5>
+                    <ul class="footer-list">
+                        <li><a href="#">Sign In</a></li>
+                        <li><a href="#">View Cart</a></li>
+                        <li><a href="#">My Wishlist</a></li>
+                        <li><a href="#">Track My Order</a></li>
+                        <li><a href="#">Help</a></li>
+                        <li><a href="#">Order</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h5 class="widget-title">Install App</h5>
+                    <div class="row">
+                        <div class="col-md-8 col-lg-12">
+                            <p>From App Store or Google Play</p>
+                            <div class="download-app">
+                                <a href="#" class="hover-up"><img src="assets/imgs/theme/app-store.jpg" alt=""></a>
+                                <a href="#" class="hover-up"><img src="assets/imgs/theme/google-play.jpg" alt=""></a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-lg-12 mt-md-3 mt-lg-0">
+                            <p class="mb-20">Secured Payment Gateways</p>
+                            <img src="assets/imgs/theme/payment-method.png" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <p class="font-sm text-muted mb-0">© 2022, <strong class="text-brand">Evara</strong> - HTML Ecommerce Template</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <p class="text-lg-end text-start font-sm text-muted mb-0">
+                            Designed by <a href="http://alithemes.com" target="_blank">Alithemes.com</a>. All rights reserved
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </footer>
-    <!-- Preloader Start -->
-    <div id="preloader-active">
-        <div class="preloader d-flex align-items-center justify-content-center">
-            <div class="preloader-inner position-relative">
-                <div class="text-center">
-                    <h5 class="mb-5">Now Loading</h5>
-                    <div class="loader">
-                        <div class="bar bar1"></div>
-                        <div class="bar bar2"></div>
-                        <div class="bar bar3"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Vendor JS-->
-    <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
+
+    <!-- Vendor JS -->
     <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
-    <script src="assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
     <script src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/plugins/slick.js"></script>
-    <script src="assets/js/plugins/jquery.syotimer.min.js"></script>
-    <script src="assets/js/plugins/wow.js"></script>
-    <script src="assets/js/plugins/jquery-ui.js"></script>
-    <script src="assets/js/plugins/perfect-scrollbar.js"></script>
-    <script src="assets/js/plugins/magnific-popup.js"></script>
-    <script src="assets/js/plugins/select2.min.js"></script>
-    <script src="assets/js/plugins/waypoints.js"></script>
-    <script src="assets/js/plugins/counterup.js"></script>
-    <script src="assets/js/plugins/jquery.countdown.min.js"></script>
-    <script src="assets/js/plugins/images-loaded.js"></script>
-    <script src="assets/js/plugins/isotope.js"></script>
-    <script src="assets/js/plugins/scrollup.js"></script>
-    <script src="assets/js/plugins/jquery.vticker-min.js"></script>
-    <!-- Template  JS -->
-    <script src="./assets/js/main.js?v=3.4"></script>
-    <script src="./assets/js/shop.js?v=3.4"></script>
-</body>
+    <script src="assets/js/main.js?v=3.4"></script>
+    <script src="assets/js/shop.js?v=3.4"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.quantity-controls').forEach(function(container) {
+                container.addEventListener('click', function(event) {
+                    if (!event.target.classList.contains('control-btn')) return;
 
-</html>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.quantity-controls').forEach(function(container) {
-        container.addEventListener('click', function(event) {
-            if (!event.target.classList.contains('control-btn')) return;
+                    var $container = container;
+                    var $quantitySpan = $container.querySelector('.detail-qty span:first-child');
+                    var currentQuantity = parseInt($quantitySpan.textContent);
+                    var productId = $container.closest('tr').getAttribute('data-product-id');
+                    var availableStock = parseInt($container.closest('tr').querySelector('.available-stock').textContent);
 
-            var $container = container;
-            var $quantitySpan = $container.querySelector('.quantity-container span');
-            var currentQuantity = parseInt($quantitySpan.textContent);
-            var productId = $container.closest('tr').getAttribute('data-product-id'); // Ensure correct attribute name
+                    if (event.target.classList.contains('plus')) {
+                        if (currentQuantity < availableStock) {
+                            currentQuantity++;
+                        } else {
+                            return;
+                        }
+                    } else if (event.target.classList.contains('minus')) {
+                        if (currentQuantity > 1) {
+                            currentQuantity--;
+                        } else {
+                            return;
+                        }
+                    }
 
-            if (!productId) {
-                console.error('Product ID not found');
-                return;
-            }
+                    $quantitySpan.textContent = currentQuantity;
 
-            var availableStock = parseInt($container.closest('tr').querySelector('.available-stock').textContent);
+                    var $outOfStockMessage = $container.querySelector('.out-of-stock-message');
+                    if ($outOfStockMessage) {
+                        $outOfStockMessage.textContent = currentQuantity === availableStock ? 'Max Stock' : '';
+                    }
 
-            if (event.target.classList.contains('plus')) {
-                if (currentQuantity < availableStock) {
-                    currentQuantity++; // Increment quantity
-                } else {
-                    console.error('Out of stock');
-                    return;
-                }
-            } else if (event.target.classList.contains('minus')) {
-                if (currentQuantity > 1) {
-                    currentQuantity--; // Decrement quantity if it's greater than 1
-                } else {
-                    return; // Don't allow quantity to be less than 1
-                }
-            }
+                    var price = parseFloat($container.closest('tr').querySelector('.price span').textContent.replace('₹', ''));
+                    var subtotal = price * currentQuantity;
+                    $container.closest('tr').querySelector('.subtotal').textContent = '₹' + subtotal.toFixed(2);
 
-            // Update displayed quantity
-            $quantitySpan.textContent = currentQuantity;
-
-            // Update "Out of Stock" message dynamically
-            var $outOfStockMessage = $container.querySelector('.out-of-stock-message');
-            if ($outOfStockMessage) {
-                if (currentQuantity === availableStock) {
-                    $outOfStockMessage.textContent = 'Out of Stock';
-                } else {
-                    $outOfStockMessage.textContent = ''; // Reset the message
-                }
-            }
-
-            // Update subtotal
-            var price = parseFloat($container.closest('tr').querySelector('.price span').textContent);
-            var subtotal = price * currentQuantity;
-            $container.closest('tr').querySelector('.subtotal').textContent = '$' + subtotal.toFixed(2);
-
-            // Send fetch request to update quantity in the database
-            fetch('/updatecart', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ productId: productId, quantity: currentQuantity })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                console.log('Quantity updated successfully');
-                // Update Cart Totals
-                updateTotal();
-            })
-            .catch(error => {
-                console.error('Error updating quantity:', error);
+                    fetch('/updatecart', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ productId: productId, quantity: currentQuantity })
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        console.log('Quantity updated successfully');
+                        updateTotal();
+                    })
+                    .catch(error => console.error('Error updating quantity:', error));
+                });
             });
+
+            function updateTotal() {
+                var total = 0;
+                document.querySelectorAll('.subtotal').forEach(function(subtotalElement) {
+                    if (subtotalElement) {
+                        total += parseFloat(subtotalElement.textContent.replace('₹', '') || 0);
+                    }
+                });
+                var cartTotalElement = document.querySelector('.cart_total_amount span');
+                if (cartTotalElement) {
+                    cartTotalElement.textContent = '₹' + total.toFixed(2);
+                }
+            }
         });
-    });
-});
-
-function updateTotal() {
-    var total = 0;
-    document.querySelectorAll('.subtotal').forEach(function(subtotalElement) {
-        if (subtotalElement) {
-            total += parseFloat(subtotalElement.textContent.replace('$', '') || 0);
-        }
-    });
-    var cartTotalElement = document.querySelector('.cart_total_amount span');
-    if (cartTotalElement) {
-        cartTotalElement.textContent = '$' + total.toFixed(2);
-    }
-}
-
-</script>
+    </script>
+</body>
+</html>

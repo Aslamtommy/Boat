@@ -3,9 +3,9 @@ const sendMail=(email,otp)=>{
     let transporter = nodemailer.createTransport({
         service:'gmail',
         auth:{
-            user: 'mhdrizwanpkd@gmail.com',
+            user: 'a48149660@gmail.com',
     
-            pass:'sgzmnhpoginjuwat'
+            pass:'nyss tlax psrw bpzk'
             
         }
     })

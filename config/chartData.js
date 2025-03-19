@@ -52,7 +52,7 @@ const getMonthlyDataArray = async () => {
     // Monthly Data
     const currentDate = new Date();
     const tweleMonthsAgo = new Date();
-    tweleMonthsAgo .setMonth(sevenMonthsAgo.getMonth() - 12);
+    tweleMonthsAgo .setMonth(tweleMonthsAgo.getMonth() - 12);
 
     const monthlyOrders = await Order.aggregate([
         {

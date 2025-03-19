@@ -3,11 +3,11 @@ const nocache = require('nocache')
 require('dotenv').config();
 
 
-mongoose.connect("mongodb://localhost:27017/")
+mongoose.connect("mongodb://localhost:27017")
 mongoose.connection.on('connected',()=>{
     console.log("monogo db connected")
 })
-
+ 
 
 const express=require('express')
 const app = express()

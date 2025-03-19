@@ -1,183 +1,574 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <title>Evara Dashboard</title>
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta property="og:title" content="">
-    <meta property="og:type" content="">
-    <meta property="og:url" content="">
-    <meta property="og:image" content="">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Add new product to inventory - Evara Ecommerce Platform">
+    <title>Add New Product - Evara Dashboard</title>
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="/admin-assets/imgs/theme/favicon.svg">
-    <!-- Template CSS -->
-    <link href="/admin-assets/css/main.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">  
-</head>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .screen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        /* Sidebar */
+        .navbar-aside {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #fff;
+            border-right: 1px solid #e5e7eb;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-aside .aside-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .navbar-aside .logo {
+            width: 120px;
+        }
+
+        .btn-aside-minimize {
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-aside-minimize i {
+            font-size: 20px;
+            color: #6b7280;
+        }
+
+        .menu-aside {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            margin-bottom: 5px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            font-size: 14px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .menu-link i {
+            margin-right: 10px;
+            color: #00c4cc;
+        }
+
+        .menu-link:hover, .menu-item.active .menu-link {
+            background-color: #f1f5f9;
+            color: #00c4cc;
+        }
+
+        .menu-link:hover i, .menu-item.active .menu-link i {
+            color: #1a8b90;
+        }
+
+        /* Main Content */
+        .main-wrap {
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-header {
+            background-color: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .col-search {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .searchform .input-group {
+            position: relative;
+        }
+
+        .searchform .form-control {
+            padding: 10px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .searchform .btn-light {
+            background-color: #f9fafb;
+            border: 1px solid #d1d5db;
+            border-left: none;
+            border-radius: 0 8px 8px 0;
+            padding: 0 15px;
+        }
+
+        .col-nav .nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .col-nav .nav-link {
+            color: #6b7280;
+            font-size: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .col-nav .nav-link:hover {
+            color: #00c4cc;
+        }
+
+        .dropdown-toggle::after {
+            display: none;
+        }
+
+        .dropdown-menu {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-item {
+            font-size: 14px;
+            color: #4b5563;
+            padding: 8px 15px;
+        }
+
+        .dropdown-item img {
+            width: 20px;
+            margin-right: 10px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f1f5f9;
+            color: #00c4cc;
+        }
+
+        .dropdown-item.text-danger {
+            color: #ef4444;
+        }
+
+        .btn-mobile {
+            display: none;
+        }
+
+        /* Content Section */
+        .content-main {
+            padding: 30px 20px;
+        }
+
+        .content-header {
+            margin-bottom: 30px;
+        }
+
+        .content-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .card {
+            background-color: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+        }
+
+        .card-header h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Form Styles */
+        .form-label {
+            font-size: 14px;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: #00c4cc;
+            box-shadow: 0 0 0 3px rgba(0, 196, 204, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+        }
+
+        /* Image Upload and Preview */
+        .input-upload {
+            position: relative;
+        }
+
+        .image-container {
+            display: inline-block;
+            position: relative;
+            margin: 10px;
+        }
+
+        .img-thumbnail {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .image-actions {
+            margin-top: 5px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+
+        .btn-primary {
+            background-color: #00c4cc;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #1a8b90;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        /* Cropper Modal */
+        .cropper-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .cropper-modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .cropper-container img {
+            max-width: 100%;
+            max-height: 400px;
+        }
+
+        .cropper-actions {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Submit Button */
+        .btn-md {
+            background-color: #00c4cc;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-md:hover {
+            background-color: #1a8b90;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Footer */
+        .main-footer {
+            background-color: #fff;
+            border-top: 1px solid #e5e7eb;
+            padding: 15px 20px;
+            font-size: 13px;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .text-sm-end {
+            text-align: right;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 991px) {
+            .navbar-aside {
+                transform: translateX(-100%);
+            }
+
+            .main-wrap {
+                margin-left: 0;
+            }
+
+            .btn-mobile {
+                display: inline-block;
+            }
+
+            .col-search {
+                max-width: 100%;
+            }
+
+            .col-lg-6 {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .col-lg-4 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
 <body>
     <div class="screen-overlay"></div>
     <aside class="navbar-aside" id="offcanvas_aside">
         <div class="aside-top">
-            <a href="index.html" class="brand-wrap">
+            <a href="/admin/adminhome" class="brand-wrap">
                 <img src="/admin-assets/imgs/theme/logo.svg" class="logo" alt="Evara Dashboard">
             </a>
             <div>
-                <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+                <button class="btn btn-icon btn-aside-minimize"> 
+                    <i class="material-icons md-menu_open"></i> 
+                </button>
             </div>
-        </div>      
+        </div>
         <nav>
             <ul class="menu-aside">
                 <li class="menu-item">
-                    <a class="menu-link" href="/admin/adminhome"> <i class="icon material-icons md-home"></i>
+                    <a class="menu-link" href="/admin/adminhome"> 
+                        <i class="material-icons md-home"></i>
                         <span class="text">Dashboard</span>
                     </a>
                 </li>
-                <li class="menu-item ">
-                    <a class="menu-link" href="/admin/productsList"> <i class="icon material-icons md-shopping_bag"></i>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/productsList"> 
+                        <i class="material-icons md-shopping_bag"></i>
                         <span class="text">Products</span>
                     </a>
-                   
                 </li>
-                <li class="menu-item ">
-                    <a class="menu-link" href="/admin/orderlist"> <i class="icon material-icons md-shopping_cart"></i>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/orderlist"> 
+                        <i class="material-icons md-shopping_cart"></i>
                         <span class="text">Orders</span>
                     </a>
-                    <!-- <div class="submenu">
-                        <a href="page-orders-1.html">Order list 1</a>
-                        <a href="page-orders-2.html">Order list 2</a>
-                        <a href="page-orders-detail.html">Order detail</a>
-                        <a href="page-orders-tracking.html">Order tracking</a>
-<a href="page-invoice.html">Invoice</a>
-                    </div> -->
                 </li>
-                <li class="menu-item ">
-                    <a class="menu-link" href="/admin/userlist"> <i class="icon material-icons md-store"></i>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/userlist"> 
+                        <i class="material-icons md-store"></i>
                         <span class="text">Users</span>
                     </a>
-                 
                 </li>
-                <li class="menu-item has-submenu active">
-                    <a class="menu-link" href="page-form-product-1.html"> <i class="icon material-icons md-add_box"></i>
-                        <span class="text">Add product</span>
+                <li class="menu-item active">
+                    <a class="menu-link" href="/admin/addproducts"> 
+                        <i class="material-icons md-add_box"></i>
+                        <span class="text">Add Product</span>
                     </a>
-                  
                 </li>
-                <li class="menu-item ">
-                    <a class="menu-link" href="/admin/categories"> <i class="icon material-icons md-monetization_on"></i>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/categories"> 
+                        <i class="material-icons md-category"></i>
                         <span class="text">Category</span>
                     </a>
-                  
                 </li>
-
-                <li class="menu-item ">
-                    <a class="menu-link" href="/admin/couponlist"> <i class="icon material-icons md-monetization_on"></i>
-                        <span class="text">Coupen</span>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/couponlist"> 
+                        <i class="material-icons md-local_offer"></i>
+                        <span class="text">Coupon</span>
                     </a>
-                   
                 </li>
-                <li class="menu-item ">
-                    <a class="menu-link" href="/admin/addcoupon"> <i class="icon material-icons md-monetization_on"></i>
-                        <span class="text">AddCoupen</span>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/addcoupon"> 
+                        <i class="material-icons md-add_circle"></i>
+                        <span class="text">Add Coupon</span>
                     </a>
-                   
                 </li>
-                <li class="menu-item ">
-                    <a class="menu-link" href="/admin/salesreport"> <i class="icon material-icons md-monetization_on"></i>
-                        <span class="text">Salesreport</span>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/salesreport"> 
+                        <i class="material-icons md-assessment"></i>
+                        <span class="text">Sales Report</span>
                     </a>
-                  
                 </li>
-
-
-            <hr>
-            <ul class="menu-aside">
-               
             </ul>
-            <br>
-            <br>
+            <hr>
         </nav>
     </aside>
+
     <main class="main-wrap">
         <header class="main-header navbar">
             <div class="col-search">
                 <form class="searchform">
                     <div class="input-group">
                         <input list="search_terms" type="text" class="form-control" placeholder="Search term">
-                        <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
+                        <button class="btn btn-light bg" type="button"> 
+                            <i class="material-icons md-search"></i>
+                        </button>
                     </div>
                     <datalist id="search_terms">
                         <option value="Products">
                         <option value="New orders">
-                        <option value="Apple iphone">
+                        <option value="Apple iPhone">
                         <option value="Ahmed Hassan">
                     </datalist>
                 </form>
             </div>
             <div class="col-nav">
-                <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i class="material-icons md-apps"></i> </button>
+                <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> 
+                    <i class="material-icons md-apps"></i> 
+                </button>
                 <ul class="nav">
                     <li class="nav-item">
                         <a class="nav-link btn-icon" href="#">
                             <i class="material-icons md-notifications animation-shake"></i>
-                     
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
+                        <a class="nav-link btn-icon darkmode" href="#"> 
+                            <i class="material-icons md-nights_stay"></i> 
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
+                        <a href="#" class="requestfullscreen nav-link btn-icon">
+                            <i class="material-icons md-cast"></i>
+                        </a>
                     </li>
                     <li class="dropdown nav-item">
-                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false"><i class="material-icons md-public"></i></a>
+                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false">
+                            <i class="material-icons md-public"></i>
+                        </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
                             <a class="dropdown-item text-brand" href="#"><img src="/admin-assets/imgs/theme/flag-us.png" alt="English">English</a>
                             <a class="dropdown-item" href="#"><img src="/admin-assets/imgs/theme/flag-fr.png" alt="Français">Français</a>
-                            <a class="dropdown-item" href="#"><img src="/admin-assets/imgs/theme/flag-jp.png" alt="Français">日本語</a>
-                            <a class="dropdown-item" href="#"><img src="/admin-assets/imgs/theme/flag-cn.png" alt="Français">中国人</a>
+                            <a class="dropdown-item" href="#"><img src="/admin-assets/imgs/theme/flag-jp.png" alt="日本語">日本語</a>
+                            <a class="dropdown-item" href="#"><img src="/admin-assets/imgs/theme/flag-cn.png" alt="中国人">中国人</a>
                         </div>
                     </li>
                     <li class="dropdown nav-item">
-                     
+                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false">
+                            <i class="material-icons md-person"></i>
+                        </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
                             <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
                             <a class="dropdown-item" href="#"><i class="material-icons md-settings"></i>Account Settings</a>
                             <a class="dropdown-item" href="#"><i class="material-icons md-account_balance_wallet"></i>Wallet</a>
                             <a class="dropdown-item" href="#"><i class="material-icons md-receipt"></i>Billing</a>
-                            <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Help center</a>
+                            <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Help Center</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-danger" href="#"><i class="material-icons md-exit_to_app"></i>Logout</a>
+                            <a class="dropdown-item text-danger" href="/admin/adminLogout"><i class="material-icons md-exit_to_app"></i>Logout</a>
                         </div>
                     </li>
                 </ul>
             </div>
         </header>
+
         <section class="content-main">
             <div class="row">
-                <div class="col-9">
+                <div class="col-lg-6">
                     <div class="content-header">
                         <h2 class="content-title">Add New Product</h2>
-                       
                     </div>
-                </div>
-                <div class="col-lg-6">
                     <div class="card mb-4">
                         <div class="card-header">
-                            <h4>Basic</h4>
+                            <h4>Basic Information</h4>
                         </div>
                         <div class="card-body">
-
-
-
                             <form action="/admin/addproduct" method="post" id="submit" enctype="multipart/form-data" onsubmit="return validateForm()">
                                 <div class="mb-4">
-                                    <label for="product_name" class="form-label">Product title</label>
+                                    <label for="product_name" class="form-label">Product Title</label>
                                     <input type="text" placeholder="Type here" name="name" class="form-control" id="product_name">
                                 </div>
                                 <div class="mb-4">
@@ -186,35 +577,27 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-4">
-                                        <div class="mb-4"> 
+                                        <div class="mb-4">
                                             <label class="form-label">Stock</label>
-                                            <div class="row gx-2">
-                                                <input placeholder="$" name="Stock" type="text" class="form-control" id="stock">
-                                            </div>
+                                            <input type="number" placeholder="Enter stock quantity" name="Stock" class="form-control" id="stock" min="1">
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="mb-4">
-                                            <label class="form-label">Price</label>
-                                            <input placeholder="$" type="text" name="Price" class="form-control" id="price">
+                                            <label class="form-label">Price (₹)</label>
+                                            <input type="number" placeholder="Enter price" name="Price" class="form-control" id="price" min="1" step="0.01">
                                         </div>
                                     </div>
-                                    <div class="col-lg-4">
-                                       
+                                </div>
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h4>Media</h4>
                                     </div>
-                                    <div class="col-lg-4">
-                                        <div class="card mb-4">
-                                            <div class="card-header">
-                                                <h4>Media</h4>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="input-upload">
-          
-                                                    <input class="form-control" type="file" name="images" id="imageUpload" multiple onchange="previewImages()">
-                                                    <div id="imagePreview"></div>
-                                                </div>
-                                            </div>
-                                        </div> <!-- card end// -->
+                                    <div class="card-body">
+                                        <div class="input-upload">
+                                            <input class="form-control" type="file" name="images" id="imageUpload" accept="image/jpeg,image/png,image/gif" multiple onchange="previewImages()">
+                                            <div id="imagePreview"></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card mb-4">
@@ -226,187 +609,40 @@
                                             <div class="col-sm-6 mb-3">
                                                 <label class="form-label">Category</label>
                                                 <select class="form-select" name="category" id="category">
-                                                    <option disabled selected>Select a category</option> <!-- Placeholder option -->
+                                                    <option value="" disabled selected>Select a category</option>
                                                     <% category.forEach(element => { %>
-                                                        <option> <%= element.name %> </option>
+                                                        <option value="<%= element.name %>"><%= element.name %></option>
                                                     <% }) %>
                                                 </select>
                                             </div>
-                                        </div> <!-- row.// -->
+                                        </div>
                                     </div>
-                                </div> <!-- card end// -->
-                                <button type="submit" class="btn btn-md rounded font-sm hover-up">Publish</button>
+                                </div>
+                                <button type="submit" class="btn btn-md">Publish</button>
                             </form>
-                        
-              <!-- Place this script at the end of the body tag or after the form -->
-
-
-            
-            <script>
-              function validateForm() {
-    const productName = document.getElementById('product_name').value;
-    const description = document.getElementById('description').value;
-    const stock = document.getElementById('stock').value;
-    const price = document.getElementById('price').value;
-   
-    const image = document.getElementById('imageUpload');
-    const category = document.getElementById('category').value;
-
-    if (
-        productName.trim() === '' ||
-        description.trim() === '' ||
-        stock.trim() === '' ||
-        price.trim() === '' ||
-      
-        image.files.length === 0 || // Check if a file is selected
-        category.trim() === ''
-    ) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Please fill out all required fields.'
-        });
-        return false;
-    }
-
-    if (isNaN(stock) || isNaN(price)) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Stock and Price must be numbers.'
-        });
-        return false;
-    }
-
-
-    if (stock < 1 || price < 1 ) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Stock and Price  must be greater than or equal to 1.'
-        });
-        return false;
-    }
-
-    // Image type validation
-     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-     const selectedFile = image.files[0];
-     if (!allowedTypes.includes(selectedFile.type)) {
-         Swal.fire({
-             icon: 'error',
-            title: 'Oops...',
-             text: 'Please select a valid image file (JPEG, PNG, or GIF).'
-        });
-        return false;
-     }
-
-    return true;
-}
-
-            </script>
-  <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
-
-              <script>
-         
-         function previewImages() {
-    var preview = document.getElementById('imagePreview');
-    var files = document.getElementById('imageUpload').files;
-
-    if (files) {
-        Array.from(files).forEach(function(file) {
-            var container = document.createElement('div');
-            container.classList.add('image-container');
-
-            var img = document.createElement('img');
-            img.src = URL.createObjectURL(file);
-            img.classList.add('img-thumbnail', 'mr-2', 'mb-2');
-
-            let cropper = new Cropper(img, {
-                aspectRatio: 1.0, 
-                viewMode: 1,
-                guides: true,
-                background: false,
-                autoCropArea: 1,
-                zoomable: true
-            });
-
-            var cropBtn = createButton('Crop', 'btn-primary', function(event) {
-                event.preventDefault();
-                cropImage(cropper, file);
-            });
-
-            var deleteBtn = createButton('Delete', 'btn-danger', function() {
-                container.remove();
-                cropper.destroy();
-                removeFileFromInput(file);
-            });
-
-            container.appendChild(img);
-            container.appendChild(cropBtn);
-            container.appendChild(deleteBtn);
-            preview.appendChild(container);
-        });
-    }
-}
-
-
-    function createButton(text, className, clickHandler) {
-        var button = document.createElement('button');
-        button.textContent = text;
-        button.classList.add('btn', 'btn-sm', className, 'mr-2');
-        button.onclick = clickHandler;
-        return button;
-    }
-
-    function cropImage(cropper, file) {
-        var croppedCanvas = cropper.getCroppedCanvas();
-        croppedCanvas.toBlob(function(blob) {
-            var reader = new FileReader();
-            reader.onload = function() {
-                var hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'croppedImages[]';
-                hiddenInput.value = reader.result;
-                document.getElementById('submit').appendChild(hiddenInput);
-
-                var croppedImage = document.createElement('img');
-                croppedImage.src = reader.result;
-                document.getElementById('imagePreview').appendChild(croppedImage);
-            };
-            reader.readAsDataURL(blob);
-        }, 'image/png');
-    }
-
-    function removeFileFromInput(fileToRemove) {
-        var input = document.getElementById('imageUpload');
-        var files = Array.from(input.files);
-        var index = files.indexOf(fileToRemove);
-
-        if (index !== -1) {
-            files.splice(index, 1);
-            var newInput = document.createElement('input');
-            newInput.type = 'file';
-            newInput.name = 'images';
-            newInput.id = 'imageUpload';
-            newInput.className = 'form-control';
-            newInput.multiple = true;
-            newInput.setAttribute('onchange', 'previewImages()');
-            input.parentNode.replaceChild(newInput, input);
-        }
-    }
-</script>
-
-            
-
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section> <!-- content-main end// -->
+
+            <!-- Cropper Modal -->
+            <div id="cropperModal" class="cropper-modal">
+                <div class="cropper-modal-content">
+                    <div id="cropperContainer"></div>
+                    <div class="cropper-actions">
+                        <button class="btn btn-sm btn-primary" onclick="saveCroppedImage()">Save</button>
+                        <button class="btn btn-sm btn-danger" onclick="closeCropperModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <footer class="main-footer font-xs">
             <div class="row pb-30 pt-15">
                 <div class="col-sm-6">
                     <script>
-                    document.write(new Date().getFullYear())
-                    </script> ©, Evara - HTML Ecommerce Template .
+                        document.write(new Date().getFullYear());
+                    </script> ©, Evara - HTML Ecommerce Template.
                 </div>
                 <div class="col-sm-6">
                     <div class="text-sm-end">
@@ -416,17 +652,192 @@
             </div>
         </footer>
     </main>
+
+    <!-- Vendor JS -->
     <script src="/admin-assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/admin-assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="/admin-assets/js/vendors/select2.min.js"></script>
     <script src="/admin-assets/js/vendors/perfect-scrollbar.js"></script>
     <script src="/admin-assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
     <!-- Main Script -->
     <script src="/admin-assets/js/main.js" type="text/javascript"></script>
+
+    <!-- Form Validation and Image Handling Script -->
+    <script>
+        let currentCropper;
+        let currentFile;
+        let currentImageElement;
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+        function validateForm() {
+            const productName = document.getElementById('product_name').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const stock = document.getElementById('stock').value.trim();
+            const price = document.getElementById('price').value.trim();
+            const imageUpload = document.getElementById('imageUpload');
+            const category = document.getElementById('category').value.trim();
+
+            if (!productName || !description || !stock || !price || !category || imageUpload.files.length === 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please fill out all required fields.'
+                });
+                return false;
+            }
+
+            if (isNaN(stock) || isNaN(price) || stock < 1 || price < 1) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Stock and Price must be numbers greater than or equal to 1.'
+                });
+                return false;
+            }
+
+            for (let file of imageUpload.files) {
+                if (!allowedTypes.includes(file.type)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select valid image files (JPEG, PNG, or GIF).'
+                    });
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function previewImages() {
+            const preview = document.getElementById('imagePreview');
+            const files = document.getElementById('imageUpload').files;
+            preview.innerHTML = ''; // Clear previous previews
+
+            if (files) {
+                Array.from(files).forEach((file, index) => {
+                    const container = document.createElement('div');
+                    container.classList.add('image-container');
+
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.classList.add('img-thumbnail');
+                    img.dataset.index = index;
+
+                    const actions = document.createElement('div');
+                    actions.classList.add('image-actions');
+
+                    const cropBtn = createButton('Crop', 'btn-primary', () => {
+                        currentFile = file;
+                        currentImageElement = img;
+                        openCropperModal(file);
+                    });
+
+                    const deleteBtn = createButton('Delete', 'btn-danger', () => {
+                        container.remove();
+                        removeFileFromInput(file);
+                    });
+
+                    actions.appendChild(cropBtn);
+                    actions.appendChild(deleteBtn);
+                    container.appendChild(img);
+                    container.appendChild(actions);
+                    preview.appendChild(container);
+                });
+            }
+        }
+
+        function createButton(text, className, clickHandler) {
+            const button = document.createElement('button');
+            button.textContent = text;
+            button.classList.add('btn', 'btn-sm', className);
+            button.type = 'button';
+            button.onclick = clickHandler;
+            return button;
+        }
+
+        function removeFileFromInput(fileToRemove) {
+            const input = document.getElementById('imageUpload');
+            const dataTransfer = new DataTransfer();
+            Array.from(input.files).forEach(file => {
+                if (file !== fileToRemove) {
+                    dataTransfer.items.add(file);
+                }
+            });
+            input.files = dataTransfer.files;
+            previewImages(); // Refresh preview
+        }
+
+        function openCropperModal(file) {
+            const modal = document.getElementById('cropperModal');
+            const container = document.getElementById('cropperContainer');
+            container.innerHTML = '';
+
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            container.appendChild(img);
+
+            modal.style.display = 'block';
+
+            currentCropper = new Cropper(img, {
+                aspectRatio: 1,
+                viewMode: 1,
+                autoCropArea: 0.8,
+                responsive: true
+            });
+        }
+
+        function closeCropperModal() {
+            const modal = document.getElementById('cropperModal');
+            modal.style.display = 'none';
+            if (currentCropper) {
+                currentCropper.destroy();
+                currentCropper = null;
+            }
+        }
+
+        function saveCroppedImage() {
+            if (!currentCropper) return;
+
+            currentCropper.getCroppedCanvas({
+                width: 300,
+                height: 300
+            }).toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                currentImageElement.src = url;
+
+                const dataTransfer = new DataTransfer();
+                const newFile = new File([blob], currentFile.name, { type: currentFile.type });
+                Array.from(document.getElementById('imageUpload').files).forEach(file => {
+                    if (file === currentFile) {
+                        dataTransfer.items.add(newFile);
+                    } else {
+                        dataTransfer.items.add(file);
+                    }
+                });
+                document.getElementById('imageUpload').files = dataTransfer.files;
+
+                closeCropperModal();
+            });
+        }
+
+        // Sidebar Toggle for Mobile
+        document.querySelector('.btn-mobile').addEventListener('click', function() {
+            document.querySelector('.navbar-aside').style.transform = 'translateX(0)';
+            document.querySelector('.screen-overlay').style.display = 'block';
+        });
+
+        document.querySelector('.btn-aside-minimize').addEventListener('click', function() {
+            document.querySelector('.navbar-aside').style.transform = 'translateX(-100%)';
+            document.querySelector('.screen-overlay').style.display = 'none';
+        });
+
+        document.querySelector('.screen-overlay').addEventListener('click', function() {
+            document.querySelector('.navbar-aside').style.transform = 'translateX(-100%)';
+            this.style.display = 'none';
+        });
+    </script>
 </body>
-
-
-
-
-
 </html>
