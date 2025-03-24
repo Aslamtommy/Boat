@@ -11,11 +11,14 @@ const { Readable } = require("stream");
 const moment = require("moment");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
+import dotenv from "dotenv";
+dotenv.config();
 const razorpay = new Razorpay({
-  key_id: "rzp_test_ihsNz6lracNIu3",
+  key_id: process.env.RAZORPAY_KEY_ID,
 
-  key_secret: "f2SAIeZnMz9gBmhNUtCDSLwy",
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
+ 
 
 const ordersuccess = async (req, res) => {
   try {

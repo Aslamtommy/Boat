@@ -10,12 +10,13 @@ const order=require('../models/orderModel')
 const category=require('../models/categoryModel')
 
 const nodemailer = require('nodemailer');
-
+import dotenv from "dotenv";
+dotenv.config();
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'mhdrizwanpkd@gmail.com',
-    pass: 'sgzmnhpoginjuwat'
+    user: process.env.email,
+    pass: process.env.pass
   }
 });
 
