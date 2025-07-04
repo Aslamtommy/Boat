@@ -110,6 +110,7 @@ const deletecart = async (req, res) => {
     const { id } = req.query;
     const userId = req.session.user_id;
 
+    // Find and update the cart by removing the item
     const updatedCart = await Cart.findOneAndUpdate(
       { userId },
       { $pull: { items: { productId: id } } },
@@ -119,6 +120,12 @@ const deletecart = async (req, res) => {
     if (!updatedCart) {
       return res.status(404).send('Cart not found');
     }
+
+    // Recalculate the total based on remaining items
+    updatedCart.total = updatedCart.items.reduce((total, item) => total + item.subTotal, 0);
+
+    // Save the updated cart
+    await updatedCart.save();
 
     res.redirect('/cart');
   } catch (error) {
