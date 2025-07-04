@@ -1,3 +1,4 @@
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +8,7 @@
     <meta name="description" content="Complete your purchase with boAt’s premium audio gear.">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Bootstrap for Grid System (Optional, you can remove if not needed) -->
+    <!-- Bootstrap for Grid System -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -377,12 +378,12 @@
                                                                 </a>
                                                             </td>
                                                             <td>x<%= product.quantity %></td>
-                                                            <td>$<%= product.subTotal.toFixed(2) %></td>
+                                                            <td>₹<%= product.subTotal.toFixed(2) %></td>
                                                         </tr>
                                                     <% }); %>
                                                     <tr>
                                                         <th>Subtotal</th>
-                                                        <td colspan="2">$<%= totalSubtotal.toFixed(2) %></td>
+                                                        <td colspan="2">₹<%= totalSubtotal.toFixed(2) %></td>
                                                     </tr>
                                                     <tr>
                                                         <th>Shipping</th>
@@ -390,11 +391,11 @@
                                                     </tr>
                                                     <tr>
                                                         <th>Discount</th>
-                                                        <td colspan="2" id="discount">Rs: 0</td>
+                                                        <td colspan="2" id="discount">₹0</td>
                                                     </tr>
                                                     <tr class="total-row">
                                                         <th>Total</th>
-                                                        <td colspan="2" id="totalprice">$<%= totalSubtotal.toFixed(2) %></td>
+                                                        <td colspan="2" id="totalprice">₹<%= totalSubtotal.toFixed(2) %></td>
                                                     </tr>
                                                 <% } else { %>
                                                     <tr>
@@ -422,7 +423,7 @@
                                             <h6>Available Coupons:</h6>
                                             <ul class="list-unstyled">
                                                 <% coupons.forEach(coupon => { %>
-                                                    <li><%= coupon.code %> - <%= coupon.discount %>% off (Min: $<%= coupon.minAmt %>)</li>
+                                                    <li><%= coupon.code %> - <%= coupon.discount %>% off (Min: ₹<%= coupon.minAmt %>)</li>
                                                 <% }); %>
                                             </ul>
                                         </div>
@@ -452,13 +453,10 @@
                                                 </div>
                                             <% }); %>
                                         </div>
-                                 <% } else { %>
-                            <!-- Show "Add Address" button if no addresses exist -->
-                            <p>No addresses found.</p>
-                            <% if (!addressData?.address?.length) { %>
-                                <a href="/addnewaddress?from=checkout" class="btn btn-outline-primary">Add Address</a>
-                            <% } %>
-                        <% } %>
+                                    <% } else { %>
+                                        <p>No addresses found.</p>
+                                        <a href="/addnewaddress?from=checkout" class="btn btn-outline-primary">Add Address</a>
+                                    <% } %>
                                 </div>
 
                                 <!-- Payment Methods -->
@@ -493,14 +491,13 @@
         </section>
     </main>
 
-    <%- include('../layouts/footer') %>
-
     <!-- Scripts -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        let originalTotal = <%= totalSubtotal.toFixed(2) %>;
+        let originalTotal = parseFloat("<%= totalSubtotal ? totalSubtotal.toFixed(2) : '0.00' %>");
         let appliedDiscount = 0;
+        let appliedCouponCode = '';
 
         async function applycoupon() {
             const couponCode = document.getElementById('couponcode').value.trim();
@@ -515,13 +512,19 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ couponCode, totalPrice: originalTotal })
                 });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
                 const data = await response.json();
-                
+
                 document.getElementById('couponmessage').textContent = data.message;
                 if (data.total) {
                     appliedDiscount = parseFloat(data.discount);
-                    document.getElementById('discount').textContent = `Rs: ${appliedDiscount.toFixed(2)}`;
-                    document.getElementById('totalprice').textContent = `$ ${(originalTotal - appliedDiscount).toFixed(2)}`;
+                    appliedCouponCode = couponCode;
+                    document.getElementById('discount').textContent = `₹${appliedDiscount.toFixed(2)}`;
+                    document.getElementById('totalprice').textContent = `₹${(originalTotal - appliedDiscount).toFixed(2)}`;
                     document.getElementById('cancelCouponBtn').style.display = 'inline-block';
                 }
             } catch (error) {
@@ -530,13 +533,38 @@
             }
         }
 
-        function cancelCoupon() {
-            document.getElementById('couponcode').value = '';
-            document.getElementById('couponmessage').textContent = 'Coupon cancelled';
-            document.getElementById('discount').textContent = 'Rs: 0';
-            document.getElementById('totalprice').textContent = `$ ${originalTotal.toFixed(2)}`;
-            document.getElementById('cancelCouponBtn').style.display = 'none';
-            appliedDiscount = 0;
+        async function cancelCoupon() {
+            if (!appliedCouponCode) {
+                document.getElementById('couponmessage').textContent = 'No coupon applied';
+                return;
+            }
+
+            try {
+                const response = await fetch('/cancelcoupon', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ couponCode: appliedCouponCode })
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    console.error('Cancel coupon response:', text);
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                document.getElementById('couponmessage').textContent = data.message;
+                document.getElementById('couponcode').value = '';
+                document.getElementById('discount').textContent = '₹0';
+                document.getElementById('totalprice').textContent = `₹${originalTotal.toFixed(2)}`;
+                document.getElementById('cancelCouponBtn').style.display = 'none';
+                appliedDiscount = 0;
+                appliedCouponCode = '';
+            } catch (error) {
+                console.error('Cancel coupon error:', error.message);
+                Swal.fire('Error', error.message.includes('401') ? 'Please log in to cancel coupon' : 'Failed to cancel coupon', 'error');
+            }
         }
 
         document.getElementById('placeOrderBtn').addEventListener('click', async (e) => {
@@ -552,7 +580,7 @@
             const totalPrice = originalTotal - appliedDiscount;
 
             if (totalPrice > 1000 && paymentOption === 'Cash on delivery') {
-                Swal.fire('Error', 'Cash on Delivery not available for orders above $1000', 'error');
+                Swal.fire('Error', 'Cash on Delivery not available for orders above ₹1000', 'error');
                 return;
             }
 
@@ -560,7 +588,8 @@
                 addressId: selectedAddress.value,
                 cartSubtotal: totalPrice,
                 paymentOption,
-                discount: appliedDiscount
+                discount: appliedDiscount,
+                couponCode: appliedCouponCode
             };
 
             try {
@@ -569,6 +598,11 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
                 const result = await response.json();
 
                 if (result.success) {
@@ -616,3 +650,4 @@
     </script>
 </body>
 </html>
+ 

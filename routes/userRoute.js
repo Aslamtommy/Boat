@@ -83,6 +83,7 @@ user_route.get('/changePassword',userController.changePasswordPage)
 user_route.post('/changePassword',isLogin,userController.changepassword)
 
 user_route.post('/applycoupon',isLogin,couponController.applycoupon)
+user_route.post('/cancelcoupon', isLogin, couponController.cancelcoupon);
 
 user_route.get('/userwallet',isLogin,walletController.userwallet)
 user_route.get('/wallettransaction',isLogin,walletController.walletTransaction )
