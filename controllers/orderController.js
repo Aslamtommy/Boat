@@ -11,7 +11,7 @@ const { Readable } = require("stream");
 const moment = require("moment");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
-import dotenv from "dotenv";
+ const dotenv=require('dotenv')
 dotenv.config();
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,

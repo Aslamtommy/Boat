@@ -8,9 +8,10 @@ const product = require("../models/productModel");
 const Address=require('../models/addressModel')
 const order=require('../models/orderModel')
 const category=require('../models/categoryModel')
-
+ 
 const nodemailer = require('nodemailer');
-import dotenv from "dotenv";
+const dotenv = require("dotenv");
+
 dotenv.config();
 const transporter = nodemailer.createTransport({
   service: 'gmail',

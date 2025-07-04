@@ -1,4 +1,3 @@
-
 <%- include('../layouts/header') %>
     
     
@@ -44,10 +43,13 @@
                                                 <span id="verifyOTPTimer" style="display: none;"></span> <!-- Timer display -->
                                             </div>
                                         
-                                            <div class="form-group" style="width: 50%">
-                                                <button type="button" class="btn btn-fill-out btn-block hover-up" id="resendOTP">ResendOTP</button>
-                                                <span id="resendOTPTimer" style="display: none;"></span> <!-- Timer display -->
-                                            </div>
+                                          <div class="form-group" style="width: 50%">
+    <button type="button" class="btn btn-fill-out btn-block hover-up" id="resendOTP" style="display: none;">
+        Resend OTP
+    </button>
+    <span id="resendOTPTimer" style="display: none;"></span>
+</div>
+
                                         </form>
                                         
                                         
@@ -186,20 +188,7 @@
             </div>
         </div>
     </footer>
-    <!-- Preloader Start -->
-    <!-- <div id="preloader-active">
-        <div class="preloader d-flex align-items-center justify-content-center">
-            <div class="preloader-inner position-relative">
-                <div class="text-center">
-                    <h5 class="mb-5">Now Loading</h5>
-                    <div class="loader">
-                        <div class="bar bar1"></div>
-                        <div class="bar bar2"></div>
-                        <div class="bar bar3"></div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
+  
     </div>
     <!-- Vendor JS-->
     <script src="/assets/js/vendor/modernizr-3.6.0.min.js"></script>
@@ -223,69 +212,90 @@
     <script src="/assets/js/plugins/jquery.theia.sticky.js"></script>
     <!-- Template  JS -->
     <script src=".//assets/js/main.js?v=3.4"></script>
+
+
+    <style>
+/* This makes the disabled button look faded and unclickable */
+button.disabled,
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none; /* Prevents all click actions */
+    background-color: #ccc !important; /* Optional: gray background */
+    color: #666 !important;             /* Optional: dimmed text */
+}
+
+
+    </style>
 </body>
 
 
     <script>
-
-    // Function to update the timer text
     function updateTimer(seconds, timerId) {
-        document.getElementById(timerId).textContent = `OTP will expire in:${seconds}s`;
-        document.getElementById(timerId).style.color = 'red';
+        const timerElem = document.getElementById(timerId);
+        timerElem.textContent =` OTP will expire in: ${seconds}s`;
+        timerElem.style.color = 'red';
     }
 
-    // Function to start the countdown
-    function startTimer(duration, timerId) {
+    function startTimer(duration, timerId, callback) {
         let timer = duration;
+        const timerElem = document.getElementById(timerId);
+        timerElem.style.display = 'inline';
+
         const timerInterval = setInterval(function () {
             updateTimer(timer, timerId);
             timer--;
+
             if (timer < 0) {
                 clearInterval(timerInterval);
-                document.getElementById(timerId).style.display = 'none';
+                timerElem.style.display = 'none';
+                if (typeof callback === 'function') callback();
             }
         }, 1000);
     }
 
-    function startResendOTPTimer() {
-        document.getElementById('resendOTPTimer').style.display = 'inline'; // Show the timer
-        startTimer(60, 'resendOTPTimer'); // Start the timer for 60 seconds
-    }
-
-    document.getElementById('resendOTP').addEventListener('click', function () {
-        startResendOTPTimer();
-        // Call a function to fetch OTP from server
-        fetchOTP();
-    });
-
-    // Function to fetch OTP from server
+    // Fetch new OTP from backend
     function fetchOTP() {
-        const email=document.getElementById('email').value;
-        console.log(email);
-        // Make a fetch request to your server to get the OTP
-        fetch(`/resendotp/${email}`,{method:"GET"})
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
+        const email = document.getElementById('email').value;
+        fetch(`/resendotp/${email}, { method: "GET" }`)
+            .then(res => res.text())
+            .then(data => {
+                console.log("OTP Resent:", data);
             })
-            .then(otp => {
-                console.log("Retrieved OTP:", otp);
-                // Handle the OTP, for example, you can display it to the user or use it for further processing
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
+            .catch(err => {
+                console.error("Error fetching OTP:", err);
             });
     }
 
-    document.getElementById('verifyOTPTimer').style.display = 'inline'; // Show the timer
-    startTimer(60, 'verifyOTPTimer'); // Start the timer for 60 seconds
+    // Start resend countdown after button clicked
+    function startResendOTPTimer() {
+        const resendBtn = document.getElementById('resendOTP');
+        const timerId = 'resendOTPTimer';
+
+        resendBtn.disabled = true;
+        resendBtn.classList.add('disabled');
+        document.getElementById(timerId).style.display = 'inline';
+
+        startTimer(60, timerId, () => {
+            resendBtn.disabled = false;
+            resendBtn.classList.remove('disabled');
+            document.getElementById(timerId).style.display = 'none';
+        });
+    }
+
+    // Show resend button after first 60s OTP expires
+    window.onload = function () {
+        document.getElementById('verifyOTPTimer').style.display = 'inline';
+
+        // Start initial 60s timer
+        startTimer(60, 'verifyOTPTimer', () => {
+            document.getElementById('resendOTP').style.display = 'block';
+        });
+
+        // Handle click on Resend OTP
+        document.getElementById('resendOTP').addEventListener('click', () => {
+            fetchOTP();
+            startResendOTPTimer(); // Start 60s countdown again
+        });
+    };
 </script>
-
-    
-
-</html>
-
-
-<%- include('../layouts/footer') %>
