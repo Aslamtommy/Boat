@@ -240,10 +240,11 @@ const unBlockProduct = async (req, res) => {
 
 const salesreport = async (req, res) => {
   try {
+    const IST_OFFSET = 5.5 * 60 * 60 * 1000; // UTC +5:30
     const orderData = await Order.aggregate([
       {
         $match: {
-          status: "delivered",
+          status: { $regex: "^delivered$", $options: "i" },
         },
       },
       {
@@ -273,33 +274,27 @@ const salesreport = async (req, res) => {
     ]);
 
     if (orderData.length === 0) {
-      return res
-        .status(400)
-        .json({ success: false, message: "something went wrong" });
+      return res.status(400).json({ success: false, message: "No orders found" });
     }
 
-    // Calculate overall order amount, discount, and sales count
     let overallOrderAmount = 0;
     let overallDiscount = 0;
     let overallSalesCount = 0;
 
     orderData[0].orders.forEach((sale) => {
-      overallOrderAmount += sale.total;
-      // Check if the discount value is a valid number
+      overallOrderAmount += sale.total || 0;
       if (!isNaN(sale.discount)) {
-        overallDiscount += sale.discount;
+        overallDiscount += sale.discount || 0;
       }
       overallSalesCount++;
     });
 
-    // Pass data to the frontend
-    const option = undefined;
     return res.status(200).render("salesreport", {
       orderData: orderData[0].orders,
       overallOrderAmount: overallOrderAmount,
       overallDiscount: overallDiscount,
       overallSalesCount: overallSalesCount,
-      option: option,
+      option: undefined,
     });
   } catch (error) {
     console.error("Error fetching sales report:", error);
@@ -310,23 +305,33 @@ const salesreport = async (req, res) => {
 const saleReport = async (req, res) => {
   try {
     const option = req.query.option;
-
-    let report;
     const startdate = req.query.startDate;
     const enddate = req.query.endDate;
+    console.log("Query Parameters:", { option, startdate, enddate });
 
+    let Report;
+    const IST_OFFSET = 5.5 * 60 * 60 * 1000; // UTC +5:30
+
+    // Validate custom date range
     if (startdate && enddate) {
-      // Check if custom date range is provided
+      const start = new Date(startdate);
+      const end = new Date(enddate);
+      if (isNaN(start.getTime()) || isNaN(end.getTime()) || start > end) {
+        console.log("Invalid date range provided");
+        return res.status(400).json({ error: "Invalid date range" });
+      }
+    }
+
+    if (option === "All") {
       Report = await Order.aggregate([
         {
           $match: {
-            status: "delivered",
-            date: { $gte: new Date(startdate), $lte: new Date(enddate) },
+            status: { $regex: "^delivered$", $options: "i" },
           },
         },
         {
           $group: {
-            _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+            _id: { $year: "$date" },
             orders: { $push: "$$ROOT" },
           },
         },
@@ -335,7 +340,7 @@ const saleReport = async (req, res) => {
         },
         {
           $lookup: {
-            from: "users",
+            from: "User",
             localField: "orders.userId",
             foreignField: "_id",
             as: "orders.user",
@@ -347,36 +352,16 @@ const saleReport = async (req, res) => {
             orders: { $push: "$orders" },
           },
         },
-        { $sort: { _id: 1 } },
+        { $sort: { _id: -1 } },
       ]);
-    } else if (option == "Daily") {
-      const today = new Date();
-
-      const startDate = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate(),
-        0,
-        0,
-        0
-      ); // Beginning of the current day
-      const endDate = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate(),
-        23,
-        59,
-        59
-      ); // End of the current day
-
-      var Report = await Order.aggregate([
+    } else if (startdate && enddate) {
+      const start = new Date(new Date(startdate).getTime() + IST_OFFSET);
+      const end = new Date(new Date(enddate).getTime() + IST_OFFSET);
+      Report = await Order.aggregate([
         {
           $match: {
-            status: "delivered",
-            date: {
-              $gte: startDate,
-              $lte: endDate,
-            },
+            status: { $regex: "^delivered$", $options: "i" },
+            date: { $gte: start, $lte: end },
           },
         },
         {
@@ -390,7 +375,7 @@ const saleReport = async (req, res) => {
         },
         {
           $lookup: {
-            from: "users",
+            from: "User",
             localField: "orders.userId",
             foreignField: "_id",
             as: "orders.user",
@@ -402,22 +387,58 @@ const saleReport = async (req, res) => {
             orders: { $push: "$orders" },
           },
         },
-
         { $sort: { _id: 1 } },
       ]);
-    } else if (option == "Month") {
+    } else if (option === "Daily") {
+      const today = new Date();
+      const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
+      const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+      const startDateIST = new Date(startDate.getTime() + IST_OFFSET);
+      const endDateIST = new Date(endDate.getTime() + IST_OFFSET);
+      Report = await Order.aggregate([
+        {
+          $match: {
+            status: { $regex: "^delivered$", $options: "i" },
+            date: { $gte: startDateIST, $lte: endDateIST },
+          },
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+            orders: { $push: "$$ROOT" },
+          },
+        },
+        {
+          $unwind: "$orders",
+        },
+        {
+          $lookup: {
+            from: "User",
+            localField: "orders.userId",
+            foreignField: "_id",
+            as: "orders.user",
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            orders: { $push: "$orders" },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]);
+    } else if (option === "Month") {
       const currentYear = new Date().getFullYear();
       const currentMonth = new Date().getMonth();
-      const startDate = new Date(currentYear, currentMonth, 1); // First day of the current month
+      const startDate = new Date(currentYear, currentMonth, 1);
       const endDate = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59);
+      const startDateIST = new Date(startDate.getTime() + IST_OFFSET);
+      const endDateIST = new Date(endDate.getTime() + IST_OFFSET);
       Report = await Order.aggregate([
         {
           $match: {
-            status: "delivered",
-            date: {
-              $gte: startDate,
-              $lte: endDate,
-            },
+            status: { $regex: "^delivered$", $options: "i" },
+            date: { $gte: startDateIST, $lte: endDateIST },
           },
         },
         {
@@ -431,7 +452,7 @@ const saleReport = async (req, res) => {
         },
         {
           $lookup: {
-            from: "users",
+            from: "User",
             localField: "orders.userId",
             foreignField: "_id",
             as: "orders.user",
@@ -443,54 +464,22 @@ const saleReport = async (req, res) => {
             orders: { $push: "$orders" },
           },
         },
-        {
-          $sort: { "_id.year": 1, "_id.month": 1 },
-        },
+        { $sort: { "_id.year": 1, "_id.month": 1 } },
       ]);
-    } else if (option == "Week") {
+    } else if (option === "Week") {
       const currentYear = new Date().getFullYear();
       const currentMonth = new Date().getMonth();
-      const currentDay = new Date().getDate(); // Get the current day of the month
-      const currentDayOfWeek = new Date().getDay(); // Get the current day of the week (0 for Sunday, 1 for Monday, ..., 6 for Saturday)
-
-      const startOfWeek = new Date(
-        currentYear,
-        currentMonth,
-        currentDay - currentDayOfWeek
-      ); // Sunday of the current week
-
-      // Calculate the end date for the current week
-      const endOfWeek = new Date(
-        currentYear,
-        currentMonth,
-        currentDay + (6 - currentDayOfWeek),
-        23,
-        59,
-        59
-      ); // Saturday of the current week, with time set to end of day
-
-      // Construct the start and end dates for the current month
-      const startDate = new Date(currentYear, currentMonth, 1); // First day of the current month
-      const endDate = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59); // Last day of the current month, with time set to end of day
-
+      const currentDay = new Date().getDate();
+      const currentDayOfWeek = new Date().getDay();
+      const startOfWeek = new Date(currentYear, currentMonth, currentDay - currentDayOfWeek);
+      const endOfWeek = new Date(currentYear, currentMonth, currentDay + (6 - currentDayOfWeek), 23, 59, 59);
+      const startOfWeekIST = new Date(startOfWeek.getTime() + IST_OFFSET);
+      const endOfWeekIST = new Date(endOfWeek.getTime() + IST_OFFSET);
       Report = await Order.aggregate([
         {
           $match: {
-            status: "delivered",
-            $or: [
-              {
-                date: {
-                  $gte: startDate,
-                  $lte: endDate,
-                },
-              },
-              {
-                date: {
-                  $gte: startOfWeek,
-                  $lte: endOfWeek,
-                },
-              },
-            ],
+            status: { $regex: "^delivered$", $options: "i" },
+            date: { $gte: startOfWeekIST, $lte: endOfWeekIST },
           },
         },
         {
@@ -504,7 +493,7 @@ const saleReport = async (req, res) => {
         },
         {
           $lookup: {
-            from: "users",
+            from: "User",
             localField: "orders.userId",
             foreignField: "_id",
             as: "orders.user",
@@ -518,332 +507,346 @@ const saleReport = async (req, res) => {
         },
         { $sort: { _id: 1 } },
       ]);
-    }
-    if (
-      Report.length === 0 ||
-      !Report[0].orders ||
-      Report[0].orders.length === 0
-    ) {
-      return res
-        .status(400)
-        .json({ success: true, message: "No orders found" });
+    } else {
+      console.log("Invalid option provided:", option);
+      return res.status(400).json({ error: "Invalid report option" });
     }
 
+    // Calculate totals
     let overallOrderAmount = 0;
-    let overallDiscount = 0;
-    let overallSalesCount = Report[0].orders.length;
-
-    if (report && report.length > 0) {
-      overallSalesCount = report[0].orders.length;
-
-      report[0].orders.forEach((sale) => {
-        overallOrderAmount += sale.total;
-        if (!isNaN(sale.discount)) {
-          overallDiscount += sale.discount;
-        }
-      });
-    }
-
-    console.log("Report:", Report);
-    if (Report.length == 0) {
-      return res
-        .status(400)
-        .json({ success: true, message: "something went Wroung" });
-    }
-    return res
-      .status(200)
-      .render("salesreport", {
-        date: Report[0]._id,
-        date: Report[0]._id,
-        orderData: Report[0].orders,
-        option: option,
-        overallOrderAmount: overallOrderAmount,
-        overallDiscount: overallDiscount,
-        overallSalesCount: overallSalesCount,
-      });
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(500)
-      .send("Internal Server Error. Please try again later.");
-  }
-};
-
-const downloadPdf = async (req, res) => {
-  try {
-    // Fetch delivered orders from the database
-
-    let option = req.query.option || "Month";
-    if (option == "Daily") {
-      const today = new Date();
-      const startDate = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate(),
-        0,
-        0,
-        0
-      ); // Beginning of the current day
-      const endDate = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate(),
-        23,
-        59,
-        59
-      ); // End of the current day
-      var Report = await Order.aggregate([
-        {
-          $match: {
-            status: "delivered",
-            date: {
-              $gte: startDate,
-              $lte: endDate,
-            },
-          },
-        },
-        {
-          $group: {
-            _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
-            orders: { $push: "$$ROOT" },
-          },
-        },
-        {
-          $unwind: "$orders",
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "orders.userId",
-            foreignField: "_id",
-            as: "orders.user",
-          },
-        },
-        {
-          $group: {
-            _id: "$_id",
-            orders: { $push: "$orders" },
-          },
-        },
-        { $sort: { _id: 1 } },
-      ]);
-    } else if (option == "Month") {
-      const currentYear = new Date().getFullYear();
-      const currentMonth = new Date().getMonth();
-      const startDate = new Date(currentYear, currentMonth, 1); // First day of the current month
-      const endDate = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59);
-      Report = await Order.aggregate([
-        {
-          $match: {
-            status: "delivered",
-            date: {
-              $gte: startDate,
-              $lte: endDate,
-            },
-          },
-        },
-        {
-          $group: {
-            _id: { year: { $year: "$date" }, month: { $month: "$date" } },
-            orders: { $push: "$$ROOT" },
-          },
-        },
-        {
-          $unwind: "$orders",
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "orders.userId",
-            foreignField: "_id",
-            as: "orders.user",
-          },
-        },
-        {
-          $group: {
-            _id: "$_id",
-            orders: { $push: "$orders" },
-          },
-        },
-        {
-          $sort: { "_id.year": 1, "_id.month": 1 },
-        },
-      ]);
-    } else if (option == "Week") {
-      const currentYear = new Date().getFullYear();
-      const currentMonth = new Date().getMonth();
-      const currentDay = new Date().getDate(); // Get the current day of the month
-      const currentDayOfWeek = new Date().getDay(); // Get the current day of the week (0 for Sunday, 1 for Monday, ..., 6 for Saturday)
-
-      const startOfWeek = new Date(
-        currentYear,
-        currentMonth,
-        currentDay - currentDayOfWeek
-      ); // Sunday of the current week
-
-      // Calculate the end date for the current week
-      const endOfWeek = new Date(
-        currentYear,
-        currentMonth,
-        currentDay + (6 - currentDayOfWeek),
-        23,
-        59,
-        59
-      ); // Saturday of the current week, with time set to end of day
-
-      // Construct the start and end dates for the current month
-      const startDate = new Date(currentYear, currentMonth, 1); // First day of the current month
-      const endDate = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59); // Last day of the current month, with time set to end of day
-
-      Report = await Order.aggregate([
-        {
-          $match: {
-            status: "delivered",
-            $or: [
-              {
-                date: {
-                  $gte: startDate,
-                  $lte: endDate,
-                },
-              },
-              {
-                date: {
-                  $gte: startOfWeek,
-                  $lte: endOfWeek,
-                },
-              },
-            ],
-          },
-        },
-        {
-          $group: {
-            _id: { $week: "$date" },
-            orders: { $push: "$$ROOT" },
-          },
-        },
-        {
-          $unwind: "$orders",
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "orders.userId",
-            foreignField: "_id",
-            as: "orders.user",
-          },
-        },
-        {
-          $group: {
-            _id: "$_id",
-            orders: { $push: "$orders" },
-          },
-        },
-        { $sort: { _id: 1 } },
-      ]);
-    }
-
-    const doc = new PDFDocument();
-
-    // Set the Content-Type header to display the PDF in the browser
-    res.setHeader("Content-Type", "application/pdf");
-    // Set Content-Disposition to suggest a filename
-    res.setHeader("Content-Disposition", 'inline; filename="sale_report.pdf"');
-    // Pipe the PDF content to the response stream
-    doc.pipe(res);
-    if (option == "Week") {
-      doc
-        .text("Weekly Sale Report", { fontSize: 17, underline: true })
-        .moveDown();
-    } else if (option == "Month") {
-      doc
-        .text("Monthly Sale Report", { fontSize: 17, underline: true })
-        .moveDown();
-    } else if (option == "Year") {
-      doc
-        .text("Yearly Sale Report", { fontSize: 17, underline: true })
-        .moveDown();
-    }
-    // Add content to the PDF (based on your sale report structure)
-    doc
-      .fontSize(22)
-      .text("boAt", { align: "center" })
-      .text("earbuds", { align: "center" })
-      .text("kochi india", { align: "center" });
-
-    const rowHeight = 20; // You can adjust this value based on your preference
-
-    // Calculate the vertical position for each line of text in the row
-    const yPos = doc.y + rowHeight / 2;
-
-    // Create a table header
-    doc
-      .fontSize(12)
-      .rect(10, doc.y, 800, rowHeight) // Set a rectangle for each row
-      .text("Order ID", 20, yPos)
-      .text("email", 90, yPos)
-      .text("date", 210, yPos)
-      .text("paymethod", 260, yPos)
-      .text("discount", 340, yPos)
-      .text("total", 400, yPos);
-
-    doc.moveDown();
-
-    // Loop through fetched orders and products
-    for (const order of Report[0].orders) {
-      // Set a fixed height for each row
-      const rowHeight = 20; // You can adjust this value based on your preference
-
-      // Calculate the vertical position for each line of text in the row
-      const yPos = doc.y + rowHeight / 2;
-
-      // Add the sale report details to the PDF table
-      doc
-        .fontSize(10)
-        .rect(10, doc.y, 800, rowHeight) // Set a rectangle for each row
-        .stroke() // Draw the rectangle
-        .text(order.orderId.toString(), 15, yPos)
-        .text(order.email, 80, yPos)
-        .text(new Date(order.date).toLocaleDateString(), 200, yPos)
-        .text(order.payMethod.toString(), 260, yPos)
-        .text(order.discount, 360, yPos)
-        .text(order.total.toString(), 400, yPos);
-
-      // Move to the next row
-      doc.moveDown();
-    }
-
-    let TotalAmount = 0;
     let overallDiscount = 0;
     let overallSalesCount = 0;
 
     if (Report && Report.length > 0 && Report[0].orders) {
       overallSalesCount = Report[0].orders.length;
-
-      Report[0].orders.forEach((order) => {
-        TotalAmount += order.total || 0;
-        overallDiscount += order.discount || 0;
+      Report[0].orders.forEach((sale) => {
+        overallOrderAmount += sale.total || 0;
+        if (!isNaN(sale.discount)) {
+          overallDiscount += sale.discount || 0;
+        }
       });
     }
 
-    // Pipe the PDF content to the response stream
+    console.log("Report:", JSON.stringify(Report, null, 2));
 
-    // Add overall summary to the PDF
+    if (!Report || Report.length === 0 || !Report[0].orders || Report[0].orders.length === 0) {
+      return res.status(400).json({ success: false, message: "No orders found" });
+    }
+
+    return res.status(200).render("salesreport", {
+      date: Report[0]._id,
+      orderData: Report[0].orders,
+      option: option,
+      overallOrderAmount: overallOrderAmount,
+      overallDiscount: overallDiscount,
+      overallSalesCount: overallSalesCount,
+    });
+  } catch (error) {
+    console.error("Error fetching sales report:", error);
+    return res.status(500).send("Internal Server Error. Please try again later.");
+  }
+};
+const downloadPdf = async (req, res) => {
+  try {
+    const { option = "Month", startDate, endDate } = req.query;
+    console.log("Query Parameters:", { option, startDate, endDate });
+
+    // Validate custom date range
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      if (isNaN(start.getTime()) || isNaN(end.getTime()) || start > end) {
+        console.log("Invalid date range provided");
+        res.status(400).json({ error: "Invalid date range" });
+        return;
+      }
+    }
+
+    let Report;
+    const IST_OFFSET = 5.5 * 60 * 60 * 1000; // UTC +5:30
+
+    // Fetch orders based on the selected option or custom date range
+    if (option === "All") {
+      Report = await Order.aggregate([
+        {
+          $match: {
+            status: { $regex: "^delivered$", $options: "i" },
+          },
+        },
+        {
+          $group: {
+            _id: { $year: "$date" },
+            orders: { $push: "$$ROOT" },
+          },
+        },
+        {
+          $unwind: "$orders",
+        },
+        {
+          $lookup: {
+            from: "User", // Matches User schema
+            localField: "orders.userId",
+            foreignField: "_id",
+            as: "orders.user",
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            orders: { $push: "$orders" },
+          },
+        },
+        { $sort: { _id: -1 } },
+      ]);
+    } else if (startDate && endDate) {
+      const start = new Date(new Date(startDate).getTime() + IST_OFFSET);
+      const end = new Date(new Date(endDate).getTime() + IST_OFFSET);
+      Report = await Order.aggregate([
+        {
+          $match: {
+            status: { $regex: "^delivered$", $options: "i" },
+            date: { $gte: start, $lte: end },
+          },
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+            orders: { $push: "$$ROOT" },
+          },
+        },
+        {
+          $unwind: "$orders",
+        },
+        {
+          $lookup: {
+            from: "User",
+            localField: "orders.userId",
+            foreignField: "_id",
+            as: "orders.user",
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            orders: { $push: "$orders" },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]);
+    } else if (option === "Daily") {
+      const today = new Date();
+      const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
+      const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+      const startDateIST = new Date(startDate.getTime() + IST_OFFSET);
+      const endDateIST = new Date(endDate.getTime() + IST_OFFSET);
+      Report = await Order.aggregate([
+        {
+          $match: {
+            status: { $regex: "^delivered$", $options: "i" },
+            date: { $gte: startDateIST, $lte: endDateIST },
+          },
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+            orders: { $push: "$$ROOT" },
+          },
+        },
+        {
+          $unwind: "$orders",
+        },
+        {
+          $lookup: {
+            from: "User",
+            localField: "orders.userId",
+            foreignField: "_id",
+            as: "orders.user",
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            orders: { $push: "$orders" },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]);
+    } else if (option === "Month") {
+      const currentYear = new Date().getFullYear();
+      const currentMonth = new Date().getMonth();
+      const startDate = new Date(currentYear, currentMonth, 1);
+      const endDate = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59);
+      const startDateIST = new Date(startDate.getTime() + IST_OFFSET);
+      const endDateIST = new Date(endDate.getTime() + IST_OFFSET);
+      Report = await Order.aggregate([
+        {
+          $match: {
+            status: { $regex: "^delivered$", $options: "i" },
+            date: { $gte: startDateIST, $lte: endDateIST },
+          },
+        },
+        {
+          $group: {
+            _id: { year: { $year: "$date" }, month: { $month: "$date" } },
+            orders: { $push: "$$ROOT" },
+          },
+        },
+        {
+          $unwind: "$orders",
+        },
+        {
+          $lookup: {
+            from: "User",
+            localField: "orders.userId",
+            foreignField: "_id",
+            as: "orders.user",
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            orders: { $push: "$orders" },
+          },
+        },
+        { $sort: { "_id.year": 1, "_id.month": 1 } },
+      ]);
+    } else if (option === "Week") {
+      const currentYear = new Date().getFullYear();
+      const currentMonth = new Date().getMonth();
+      const currentDay = new Date().getDate();
+      const currentDayOfWeek = new Date().getDay();
+      const startOfWeek = new Date(currentYear, currentMonth, currentDay - currentDayOfWeek);
+      const endOfWeek = new Date(currentYear, currentMonth, currentDay + (6 - currentDayOfWeek), 23, 59, 59);
+      const startOfWeekIST = new Date(startOfWeek.getTime() + IST_OFFSET);
+      const endOfWeekIST = new Date(endOfWeek.getTime() + IST_OFFSET);
+      Report = await Order.aggregate([
+        {
+          $match: {
+            status: { $regex: "^delivered$", $options: "i" },
+            date: { $gte: startOfWeekIST, $lte: endOfWeekIST },
+          },
+        },
+        {
+          $group: {
+            _id: { $week: "$date" },
+            orders: { $push: "$$ROOT" },
+          },
+        },
+        {
+          $unwind: "$orders",
+        },
+        {
+          $lookup: {
+            from: "User",
+            localField: "orders.userId",
+            foreignField: "_id",
+            as: "orders.user",
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            orders: { $push: "$orders" },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]);
+    } else {
+      console.log("Invalid option provided:", option);
+      res.status(400).json({ error: "Invalid report option" });
+      return;
+    }
+
+    console.log("Report:", JSON.stringify(Report, null, 2));
+
+    // Initialize PDF document
+    const doc = new PDFDocument();
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'inline; filename="sale_report.pdf"');
+    doc.pipe(res);
+
+    // Check if Report is empty or undefined
+    if (!Report || Report.length === 0 || !Report[0].orders || Report[0].orders.length === 0) {
+      console.log("No orders found for the selected period");
+      doc.fontSize(12).text("No orders found for the selected period.", { align: "center" });
+      doc.end();
+      return;
+    }
+
+    // Add title based on the option
+    if (option === "All") {
+      doc.text("All Sales Report", { fontSize: 17, underline: true }).moveDown();
+    } else if (startDate && endDate) {
+      doc.text(`Sales Report (${startDate} to ${endDate})`, { fontSize: 17, underline: true }).moveDown();
+    } else if (option === "Week") {
+      doc.text("Weekly Sale Report", { fontSize: 17, underline: true }).moveDown();
+    } else if (option === "Month") {
+      doc.text("Monthly Sale Report", { fontSize: 17, underline: true }).moveDown();
+    } else if (option === "Daily") {
+      doc.text("Daily Sale Report", { fontSize: 17, underline: true }).moveDown();
+    }
+
+    // Add header information
+    doc
+      .fontSize(22)
+      .text("boAt", { align: "center" })
+      .text("earbuds", { align: "center" })
+      .text("kochi india", { align: "center" })
+      .moveDown();
+
+    // Create table header
+    const rowHeight = 20;
+    const yPos = doc.y + rowHeight / 2;
+    doc
+      .fontSize(12)
+      .rect(10, doc.y, 800, rowHeight)
+      .text("Order ID", 20, yPos)
+      .text("Email", 90, yPos)
+      .text("Date", 210, yPos)
+      .text("Paymethod", 260, yPos)
+      .text("Discount", 340, yPos)
+      .text("Total", 400, yPos)
+      .moveDown();
+
+    // Loop through orders and add to PDF
+    let TotalAmount = 0;
+    let overallDiscount = 0;
+    let overallSalesCount = 0;
+
+    for (const group of Report) {
+      for (const order of group.orders) {
+        const yPos = doc.y + rowHeight / 2;
+        doc
+          .fontSize(10)
+          .rect(10, doc.y, 800, rowHeight)
+          .stroke()
+          .text(order.orderId.toString(), 15, yPos)
+          .text(order.email || "N/A", 80, yPos)
+          .text(new Date(order.date).toLocaleDateString(), 200, yPos)
+          .text(order.payMethod || "N/A", 260, yPos)
+          .text(order.discount ? order.discount.toString() : "0", 360, yPos)
+          .text(order.total.toString(), 400, yPos)
+          .moveDown();
+
+        TotalAmount += order.total || 0;
+        overallDiscount += order.discount || 0;
+        overallSalesCount++;
+      }
+    }
+
+    // Add summary
     doc
       .fontSize(12)
       .text(`Total Amount: ${TotalAmount.toFixed(2)}`, { align: "right" })
-      .text(`Overall Discount: ${overallDiscount.toFixed(2)}`, {
-        align: "right",
-      })
+      .text(`Overall Discount: ${overallDiscount.toFixed(2)}`, { align: "right" })
       .text(`Overall Sales Count: ${overallSalesCount}`, { align: "right" });
 
     doc.end();
-    // End the document
   } catch (error) {
     console.error("Error generating PDF:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 const downloadExcel = async (req, res) => {
   try {
     const option = req.query.option;
@@ -898,182 +901,88 @@ const downloadExcel = async (req, res) => {
   }
 };
 
-async function fetchSaleReportData(option) {
+async function fetchSaleReportData(option, startDate, endDate) {
   try {
-    // Fetch the orders from the MongoDB database
-    if (option == "Daily") {
+    const IST_OFFSET = 5.5 * 60 * 60 * 1000; // UTC +5:30
+    let matchStage = { status: { $regex: "^delivered$", $options: "i" } };
+
+    if (option === "All") {
+      // No date filter for "All" option
+    } else if (startDate && endDate) {
+      matchStage.date = {
+        $gte: new Date(new Date(startDate).getTime() + IST_OFFSET),
+        $lte: new Date(new Date(endDate).getTime() + IST_OFFSET),
+      };
+    } else if (option === "Daily") {
       const today = new Date();
-      const startDate = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate(),
-        0,
-        0,
-        0
-      ); // Beginning of the current day
-      const endDate = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate(),
-        23,
-        59,
-        59
-      ); // End of the current day
-      var Report = await Order.aggregate([
-        {
-          $match: {
-            status: "delivered",
-            date: {
-              $gte: startDate,
-              $lte: endDate,
-            },
-          },
-        },
-        {
-          $group: {
-            _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
-            orders: { $push: "$$ROOT" },
-          },
-        },
-        {
-          $unwind: "$orders",
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "orders.userId",
-            foreignField: "_id",
-            as: "orders.user",
-          },
-        },
-        {
-          $group: {
-            _id: "$_id",
-            orders: { $push: "$orders" },
-          },
-        },
-        { $sort: { _id: 1 } },
-      ]);
-    } else if (option == "Month") {
+      const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
+      const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+      matchStage.date = {
+        $gte: new Date(startDate.getTime() + IST_OFFSET),
+        $lte: new Date(endDate.getTime() + IST_OFFSET),
+      };
+    } else if (option === "Month") {
       const currentYear = new Date().getFullYear();
       const currentMonth = new Date().getMonth();
-      const startDate = new Date(currentYear, currentMonth, 1); // First day of the current month
+      const startDate = new Date(currentYear, currentMonth, 1);
       const endDate = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59);
-      Report = await Order.aggregate([
-        {
-          $match: {
-            status: "delivered",
-            date: {
-              $gte: startDate,
-              $lte: endDate,
-            },
-          },
-        },
-        {
-          $group: {
-            _id: { year: { $year: "$date" }, month: { $month: "$date" } },
-            orders: { $push: "$$ROOT" },
-          },
-        },
-        {
-          $unwind: "$orders",
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "orders.userId",
-            foreignField: "_id",
-            as: "orders.user",
-          },
-        },
-        {
-          $group: {
-            _id: "$_id",
-            orders: { $push: "$orders" },
-          },
-        },
-        {
-          $sort: { "_id.year": 1, "_id.month": 1 },
-        },
-      ]);
-    } else if (option == "Week") {
+      matchStage.date = {
+        $gte: new Date(startDate.getTime() + IST_OFFSET),
+        $lte: new Date(endDate.getTime() + IST_OFFSET),
+      };
+    } else if (option === "Week") {
       const currentYear = new Date().getFullYear();
       const currentMonth = new Date().getMonth();
-      const currentDay = new Date().getDate(); // Get the current day of the month
-      const currentDayOfWeek = new Date().getDay(); // Get the current day of the week (0 for Sunday, 1 for Monday, ..., 6 for Saturday)
-
-      const startOfWeek = new Date(
-        currentYear,
-        currentMonth,
-        currentDay - currentDayOfWeek
-      ); // Sunday of the current week
-
-      // Calculate the end date for the current week
-      const endOfWeek = new Date(
-        currentYear,
-        currentMonth,
-        currentDay + (6 - currentDayOfWeek),
-        23,
-        59,
-        59
-      ); // Saturday of the current week, with time set to end of day
-
-      // Construct the start and end dates for the current month
-      const startDate = new Date(currentYear, currentMonth, 1); // First day of the current month
-      const endDate = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59); // Last day of the current month, with time set to end of day
-
-      Report = await Order.aggregate([
-        {
-          $match: {
-            status: "delivered",
-            $or: [
-              {
-                date: {
-                  $gte: startDate,
-                  $lte: endDate,
-                },
-              },
-              {
-                date: {
-                  $gte: startOfWeek,
-                  $lte: endOfWeek,
-                },
-              },
-            ],
-          },
-        },
-        {
-          $group: {
-            _id: { $week: "$date" },
-            orders: { $push: "$$ROOT" },
-          },
-        },
-        {
-          $unwind: "$orders",
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "orders.userId",
-            foreignField: "_id",
-            as: "orders.user",
-          },
-        },
-        {
-          $group: {
-            _id: "$_id",
-            orders: { $push: "$orders" },
-          },
-        },
-        { $sort: { _id: 1 } },
-      ]);
+      const currentDay = new Date().getDate();
+      const currentDayOfWeek = new Date().getDay();
+      const startOfWeek = new Date(currentYear, currentMonth, currentDay - currentDayOfWeek);
+      const endOfWeek = new Date(currentYear, currentMonth, currentDay + (6 - currentDayOfWeek), 23, 59, 59);
+      matchStage.date = {
+        $gte: new Date(startOfWeek.getTime() + IST_OFFSET),
+        $lte: new Date(endOfWeek.getTime() + IST_OFFSET),
+      };
+    } else {
+      throw new Error("Invalid report option");
     }
-    return Report[0].orders;
+
+    const Report = await Order.aggregate([
+      { $match: matchStage },
+      {
+        $group: {
+          _id: option === "All" ? { $year: "$date" } :
+               option === "Month" ? { year: { $year: "$date" }, month: { $month: "$date" } } :
+               option === "Week" ? { $week: "$date" } :
+               { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+          orders: { $push: "$$ROOT" },
+        },
+      },
+      { $unwind: "$orders" },
+      {
+        $lookup: {
+          from: "User",
+          localField: "orders.userId",
+          foreignField: "_id",
+          as: "orders.user",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          orders: { $push: "$orders" },
+        },
+      },
+      { $sort: option === "Month" ? { "_id.year": 1, "_id.month": 1 } : { _id: 1 } },
+    ]);
+
+    console.log("Fetched Report:", JSON.stringify(Report, null, 2));
+    return Report[0]?.orders || [];
   } catch (error) {
     console.error("Error fetching sale report data:", error);
     throw error;
   }
 }
+ 
+ 
 
 module.exports = {
   productslist,
