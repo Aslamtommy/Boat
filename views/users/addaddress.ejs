@@ -473,33 +473,71 @@
             </div>
         </div>
         <section class="pt-50 pb-150">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-10 m-auto">
-                        <form class="custom-form" action="" method="post" onsubmit="return validateForm()">
-                            <h4 class="text-center">Add Address</h4>
-                            <br>
+            <!-- Inside <section class="pt-50 pb-150"> -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-10 m-auto">
+            <form class="custom-form" action="/addnewaddress" method="post" onsubmit="return validateForm()">
+                <h4 class="text-center">Add Address</h4>
+                <br>
+                <!-- Add hidden input for 'from' parameter -->
+                <input type="hidden" name="from" value="<%= from %>">
+                <label for="house">House/Street:</label>
+                <input type="text" id="house" name="house" placeholder="House/street" required>
+                <label for="landmark">Landmark:</label>
+                <input type="text" id="landmark" name="landmark" placeholder="Landmark" required>
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" placeholder="City" required>
+                <label for="state">State:</label>
+                <input type="text" id="state" name="state" placeholder="State" required>
+                <label for="zipcode">ZIP Code:</label>
+                <input type="number" id="zipcode" name="zipcode" placeholder="ZIP Code" required>
+                <label for="country">Country:</label>
+                <input type="text" id="country" name="country" placeholder="Country" required>
+                <input type="submit" value="Submit">
+            </form>
+            <script>
+                function validateForm() {
+                    let house = document.getElementById("house").value.trim();
+                    let landmark = document.getElementById("landmark").value.trim();
+                    let city = document.getElementById("city").value.trim();
+                    let state = document.getElementById("state").value.trim();
+                    let zipcode = document.getElementById("zipcode").value.trim();
+                    let country = document.getElementById("country").value.trim();
 
-                            <label for="house">House/Street:</label>
-                            <input type="text" id="house" name="house" placeholder="House/street" required>
+                    const zipcodePattern = /^\d{5}$/;
+                    const alphabeticPattern = /^[a-zA-Z\s-]+$/;
 
-                            <label for="landmark">Landmark:</label>
-                            <input type="text" id="landmark" name="landmark" placeholder="Landmark" required>
-
-                            <label for="city">City:</label>
-                            <input type="text" id="city" name="city" placeholder="City" required>
-
-                            <label for="state">State:</label>
-                            <input type="text" id="state" name="state" placeholder="State" required>
-
-                            <label for="zipcode">ZIP Code:</label>
-                            <input type="number" id="zipcode" name="zipcode" placeholder="ZIP Code" required>
-
-                            <label for="country">Country:</label>
-                            <input type="text" id="country" name="country" placeholder="Country" required>
-
-                            <input type="submit" value="Submit">
-                        </form>
+                    if (house === "" || !alphabeticPattern.test(house)) {
+                        alert("Please enter a valid house name or streetname");
+                        return false;
+                    }
+                    if (landmark === "" || !alphabeticPattern.test(landmark)) {
+                        alert("Please enter a valid landmark.");
+                        return false;
+                    }
+                    if (city === "" || !alphabeticPattern.test(city)) {
+                        alert("Please enter a valid city.");
+                        return false;
+                    }
+                    if (state === "" || !alphabeticPattern.test(state)) {
+                        alert("Please enter a valid state name.");
+                        return false;
+                    }
+                    if (!zipcodePattern.test(zipcode)) {
+                        alert("Please enter a valid 5-digit ZIP code.");
+                        return false;
+                    }
+                    if (country === "" || !alphabeticPattern.test(country)) {
+                        alert("Please enter a valid country name.");
+                        return false;
+                    }
+                    return true;
+                }
+            </script>
+        </div>
+    </div>
+</div>
                         <script>
                            function validateForm() {
     // Trim input values to remove leading and trailing spaces

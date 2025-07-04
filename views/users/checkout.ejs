@@ -452,9 +452,13 @@
                                                 </div>
                                             <% }); %>
                                         </div>
-                                    <% } else { %>
-                                        <a href="/addaddress" class="btn btn-outline-primary">Add Address</a>
-                                    <% } %>
+                                 <% } else { %>
+                            <!-- Show "Add Address" button if no addresses exist -->
+                            <p>No addresses found.</p>
+                            <% if (!addressData?.address?.length) { %>
+                                <a href="/addnewaddress?from=checkout" class="btn btn-outline-primary">Add Address</a>
+                            <% } %>
+                        <% } %>
                                 </div>
 
                                 <!-- Payment Methods -->
